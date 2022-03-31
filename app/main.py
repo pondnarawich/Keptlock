@@ -11,7 +11,7 @@ with open(path, "r") as f:
 
 @app.route('/keptlock/usesr/register',method=['POST'])
 def register():
-
+    print(b)
     return r
 
 @app.route('/off')
