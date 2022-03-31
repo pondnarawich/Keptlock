@@ -78,6 +78,60 @@ def rud_locker_api(lid):
     return lid
 
 
+# pin
+
+
+@app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
+def generate_pin_api(lid):
+    print(lid)
+    return lid
+
+
+@app.route('/keptlock/locker/unlock/<pid>', methods=['PUT', 'GET', 'DELETE'])
+def rud_pin_api(pid):
+    print(pid)
+    if request.method == 'PUT':
+        print('put', pid)
+    elif request.method == 'GET':
+        print('get', pid)
+    elif request.method == 'DELETE':
+        print('delete', pid)
+    return pid
+
+
+@app.route('/keptlock/locker/unlock/<pid>', methods=['POST'])
+def unlock_api(pid):
+    print(pid)
+    return pid
+
+
+# video
+
+
+@app.route('/keptlock/locker/video', methods=['POST'])
+def add_video_api():
+    r = request.json
+    return r
+
+
+@app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
+def rud_video_api(vid):
+    print(vid)
+    if request.method == 'PUT':
+        print('put', vid)
+    elif request.method == 'GET':
+        print('get', vid)
+    elif request.method == 'DELETE':
+        print('delete', vid)
+    return vid
+
+
+@app.route('/keptlock/locker/video', methods=['GET'])
+def readall_locker_api():
+    r = request.json
+    return r
+
+
 if __name__ == '__main__':
     # run() method of Flask class runs the application
     # on the local development server.
