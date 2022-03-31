@@ -1,15 +1,25 @@
 from flask import Flask
 from flask import request
-import requests
+from flask import render_template
 import os
-# from db_struct import locker
-app = Flask(__name__)
+
+template_dir = os.path.abspath('../template')
+app = Flask(__name__, template_folder=template_dir)
 
 
-path = r"/home/pondnarawich/Documents/GitHub/keptlock/app/init.py"
-assert os.path.isfile(path)
-with open(path, "r") as f:
-    pass
+
+
+# os.path.insert(1, '/Users/gnnchya/Documents/Keptlock/template')
+from html import *
+
+# path = r"/home/pondnarawich/Documents/GitHub/keptlock/app/init.py"
+# assert os.path.isfile(path)
+# with open(path, "r") as f:
+#     pass
+
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 
 @app.route('/keptlock/user/register', methods=['POST'])
