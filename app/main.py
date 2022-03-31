@@ -9,12 +9,9 @@ assert os.path.isfile(path)
 with open(path, "r") as f:
     pass
 
-@app.route('/on')
-def on():
-    response = requests.get('http://127.0.0.1:5000/on')
-    r = response.json()
-    print(r)
-    print('on')
+@app.route('/keptlock/usesr/register',method=['POST'])
+def register():
+
     return r
 
 @app.route('/off')

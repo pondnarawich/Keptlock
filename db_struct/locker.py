@@ -5,3 +5,8 @@ class Locker:
         self.size = size
         self.row = row
         self.col = col
+
+def p(a):
+    print(a)
+
+b = 'mind'
