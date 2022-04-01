@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash, Blueprint
+from flask import Flask, request, render_template, redirect, flash
 from flask_login import login_user, login_required, current_user, logout_user, LoginManager
 import os
 
@@ -31,16 +31,38 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
+
 @app.route('/keptlock/user/register')
 def register_page():
-    # r = request.json
     return render_template('signup.html')
 
 
 @app.route('/keptlock/user/register', methods=['POST'])
 def register_api():
-    # r = request.json
-    return render_template('signup.html')
+    fname = request.form['fname_reg']
+    lname = request.form['lname_reg']
+    mobile = request.form['mobile_reg']
+    email = request.form['email_reg']
+    username = request.form['username_reg']
+    password = request.form['password_reg']
+
+    #TODO validate username email mobile. Are they unique? if ok then add to db
+
+    uname_unique = True
+    email_unique = True
+    mobile_unique = True
+
+    if uname_unique and email_unique and mobile_unique:
+        return redirect("http://127.0.0.1:8000/keptlock/user/login")
+    elif uname_unique and email_unique and not mobile_unique:
+        flash("This mobile number has been used, try again")
+        return redirect('http://127.0.0.1:8000/keptlock/user/register')
+    elif uname_unique and not email_unique and mobile_unique:
+        flash("This email has been used, try again")
+        return redirect('http://127.0.0.1:8000/keptlock/user/register')
+    elif not uname_unique and email_unique and mobile_unique:
+        flash("This username has been used, try again")
+        return redirect('http://127.0.0.1:8000/keptlock/user/register')
 
 
 @app.route('/keptlock/user/login')
@@ -85,7 +107,6 @@ def device():
 @login_required
 def logout_api():
     logout_user()
-    # print(uid)
     return redirect('http://127.0.0.1:8000')
 
 

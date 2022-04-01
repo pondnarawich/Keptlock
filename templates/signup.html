@@ -58,42 +58,42 @@
             {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="exists">
-                    <h3> {{ messages[0] }}. Go to <a href="{{ 'http://127.0.0.1:8000/keptlock/user/login' }}">login page</a>.</h3>
+                    <h3> {{ messages[0] }}. or Go to <a href="{{ 'http://127.0.0.1:8000/keptlock/user/login' }}">login page</a>.</h3>
                 </div>
             {% endif %}
             {% endwith %}
 
           <div class="box">
           
-            <form action="">
+            <form action="" method="post">
                 <h3>First Name</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="text" name="fname_reg" required>
                 </div>
                 <h3>Last Name</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="text" name="lname_reg" required>
                 </div>
               <h3>Mobile</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="tel" pattern="[0]{1}[6,8,9]{1}[0-9]{8}" name="mobile_reg" required>
                 </div>
                 <h3>Email</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="email" name="email_reg" required>
                 </div>
               <h3>Username</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="text" name="username_reg" required>
                 </div>
                 <h3>Password</h3>
                 <div class="inputBox">
-                    <input type="text" required>
+                    <input type="password" name="password_reg" required>
                 </div>
     
                 <input type="submit" value="SIGN UP" class="btn">
 
-              <a href="device.html"><h2><span>OR</span></h2></a>
+              <h2><span>OR</span></h2>
 
               <a href="http://127.0.0.1:8000/keptlock/user/login" ><h4>Already a user? LOGIN</h4></a>
     
