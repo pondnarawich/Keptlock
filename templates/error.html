@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kept-lock</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <script src="https://kit.fontawesome.com/802ccae5cc.js" crossorigin="anonymous"></script>
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+  
+  
+  <body id="navy">
+    <header class="header">
+  
+      <a href="http://127.0.0.1:8000" class="logo"> Kept-lock </a>
+                
+      <div class="icons">          
+        <div>
+            <a href="http://127.0.0.1:8000/keptlock/user/login"><div class="fas fa-circle-user" ></div></a>
+        </div>
+      </div>   
+    
+    </header> 
+
+    <!-- motto section starts  -->
+
+    <section class="motto">
+    
+      <div class="content">
+          <h3>"Sleek design, yet securely keep your belongings"</h3>
+          <p>Narawich, the CEO</p>
+      </div>
+
+      <div class="image"> 
+        <img src="https://cdn.discordapp.com/attachments/802176047096922175/957722877518544956/logo_prev_ui.png" alt="">
+      </div>
+    
+    
+    </section>
+
+    <!-- motto section ends -->
+
+    <!-- login section starts  -->
+
+    <section class="login">
+        
+    
+        <div class="row">
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages[0] == 'You trying to access the service while not logging in'%}
+                <div class="exists">
+                    <h3> {{ messages[0] }}. Go to <a href="{{ 'http://127.0.0.1:8000' }}"> LOGIN page</a>.</h3>
+                </div>
+            {% else %}
+            {% if messages[0]%}
+                <div class="exists">
+                    <h3> {{ messages[0] }}.</h3>
+                </div>
+            {% endif %}
+            {% endif %}
+            {% endwith %}
+        </div>
+      </div>
+    
+    </section>
+
+<!-- login section ends -->
+        
+    
+  </body>
+
+</html>
+

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kept-lock</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <script src="https://kit.fontawesome.com/802ccae5cc.js" crossorigin="anonymous"></script>
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+  
+  
+  <body id="navy">
+    <header class="header">
+  
+      <a href="device.html" class="logo"> Kept-lock </a>
+                
+      <div class="icons">  
+        <div>
+          <p  class="logo"> {{username}} </p>
+              <a href="http://127.0.0.1:8000/keptlock/user/logout" method="post"><div class="fas fa-right-from-bracket" ></div></a>
+        </div>
+      </div>   
+    
+    </header> 
+
+    <!-- motto section starts  -->
+
+    <section class="motto_small">
+      <div class="image_small"> 
+        <img src="https://cdn.discordapp.com/attachments/802176047096922175/957722877518544956/logo_prev_ui.png" alt="">
+      </div>
+
+      <div class="content_small">
+          <h1>DEVICE</h1>
+      </div>
+    
+    
+    </section>
+
+    <section class="add_device">
+        <a class=button href="#popup2"><div class="box">
+          <div class="content">
+            <h1>Add device</h1>
+          </div>
+          <div class="image">
+            <img src="https://cdn-icons-png.flaticon.com/512/117/117885.png" alt="">
+          </div>
+        </div></a>
+    </section>
+    
+    <!-- motto section ends -->
+
+   <section class="device">
+
+    <div class="box-container">
+    
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 1</h3>
+            <a href="locker.html" class="btn">See more</a>
+          
+        </div>
+
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 2</h3>
+            <a href="locker.html" class="btn">See more</a>
+        </div>
+
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 3</h3>
+            <a href="locker.html" class="btn">See more</a>
+
+        </div>
+
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 4</h3>
+            <a href="locker.html" class="btn">See more</a>
+          
+        </div>
+
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 5</h3>
+            <a href="locker.html" class="btn">See more</a>
+        </div>
+
+        <div class="box">
+            <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
+            <h3>My locker 6</h3>
+            <a href="locker.html" class="btn">See more</a>
+
+        </div>
+    </div>
+
+   <div id="popup2" class="overlay">
+      <div class="popup">
+        <h2>Add a device</h2>
+        <div class="content">
+          Please enter device's code to add your Kept-lock !
+        </div>
+          <form>
+            <input type="text" id="dev_code"  placeholder="ex: 7C6FT593DNU579S"/>
+          </form>
+          <a href="locker.html" class="btn_con">Confirm</a>
+          <a href="#"class="btn_can">Cancel</a>
+      </div>
+    </div>
+
+</section>
+        
+    
+  </body>
+
+</html>
+
