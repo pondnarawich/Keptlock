@@ -89,7 +89,7 @@ def login_api():
     password = request.form['password']
 
     from db_struct.user import User
-    user_info_login = User(12345, "gunn", "chai", "62011118@kmitl.ac.th", "0970047016", "gnnchya", "gnnchya", None, None, None)
+    user_info_login = User(12345678, "gunn", "chai", "62011118@kmitl.ac.th", "0970047016", "gnnchya", "gnnchya", None, None, None)
 
     # TODO Check the user and password in the database
     # mock up variable, need to be from checking with db
@@ -174,6 +174,14 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 def rud_locker_api(lid):
     print(lid)
+    # TODO query to get uid from lid,
+
+    # mock up data
+    uid = 12345678
+    if uid != current_user.id:
+        flash("You trying to access other's locker!")
+        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+
     if request.method == 'POST':
         for key in request.form:
             if key.startswith('open.'):
