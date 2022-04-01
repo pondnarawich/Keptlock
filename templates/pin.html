@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kept-lock</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <script src="https://kit.fontawesome.com/802ccae5cc.js" crossorigin="anonymous"></script>
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+  
+  
+  <body id="navy">
+     <header class="header">
+  
+      <a href="device.html" class="logo"> Kept-lock </a>
+                
+       <div class="icons">
+        <div>
+          <p  class="logo"> {{username}} </p>
+              <a href="http://127.0.0.1:8000/keptlock/user/logout" ><div class="fas fa-right-from-bracket" ></div></a>
+        </div>
+      </div>
+    
+    </header> 
+
+    <!-- motto section starts  -->
+
+    <section class="motto_small">
+      <div class="image_small"> 
+        <img src="https://cdn.discordapp.com/attachments/802176047096922175/957722877518544956/logo_prev_ui.png" alt="">
+      </div>
+
+      <div class="content_small">
+          <h1>Generate Pin</h1>
+      </div>
+    
+    
+    </section>
+
+    <!-- motto section ends -->
+
+    <!-- login section starts  -->
+
+    <section class="gen_pin">
+        
+      
+       <div class="locker" >
+        <h2 class="heading"> My locker 1</h2>
+        <div class="control">
+          
+          <div class="open">
+              <h2> 1. Select the slot</h2>
+
+              <input type="radio" id="slot1" name="open"/>
+               <label for="slot1" class="button">Slot #1</label>
+
+              <input type="radio" id="slot2" name="open" />
+              <label for="slot2" class="button">Slot #2</label>
+
+              <input type="radio" id="slot3" name="open"/>
+              <label for="slot3" class="button">Slot #3</label>
+
+            
+          </div> 
+
+        
+        <div class="pin">
+
+          <div class="pin_his">
+            <h2>2. Select the Time</h2>
+            
+            <input type="radio" id="period" name="time" checked/>
+             <label for="period">•  Select pin avalability period</label>
+            <div class="sub">
+              <form action="">
+                <div class="align">
+                  <label for="start">Select a start date and time:</label>
+                  <input type="datetime-local" id="start" name="time"/>
+                  
+                  <label for="end">Select an expiry date and time:</label>
+                  <input type="datetime-local" id="end" name="time"/>
+                  
+                  <a href="locker.html"><input type="submit" value="generate" class="btn"/></a>
+                </div>
+              </form>
+            </div>
+
+            <input type="radio" id="range" name="time" />
+            <label for="range">• Select time limit for a pin</label>
+            <div class="sub2">
+              <form action="">
+                <div class="align">
+                  <label for="start">Select a time limit for a pin (minute)</label>
+                 <input type="number" id="minute" min="10" step="10" placeholder="minute (min: 10)"/>
+                
+                <a href="locker.html"><input type="submit" value="generate" class="btn"/></a>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>            
+  </div>
+    
+    </section>
+
+<!-- login section ends -->
+        
+    
+  </body>
+
+</html>
+

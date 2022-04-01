@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kept-lock</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <script src="https://kit.fontawesome.com/802ccae5cc.js" crossorigin="anonymous"></script>
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+  
+  
+  <body id="white">
+    <header class="header">
+  
+      <a href="#home" class="logo"> Kept-lock </a>
+                
+      <div class="icons">          
+        <div>
+          <a href="http://127.0.0.1:8000/keptlock/user/login" ><div class="fas fa-circle-user" ></div></a>
+        </div>
+      </div>   
+    
+    </header> 
+
+    <!-- home section starts  -->
+
+    <section class="home">
+    
+        <div class="content">
+            <h3>Kept-Lock</h3>
+            <p>Kept-Lock is the Smart Mailbox that will keep your parcel secure and notify user when the parcel is delivered.</p>
+        </div>
+
+    </section>
+
+    <!-- home section ends -->
+
+    <!-- product section starts  -->
+
+    <section class="product">
+    
+        <h1 class="heading"> Our Product</h1>
+    
+        <div class="box-container">
+    
+            <div class="box">
+                <img src="https://www.parcelhome.com/wp-content/uploads/2020/12/parcelhome-filled-with-packages.jpg.webp" alt="" class="prod_pic">
+                <h3 class="prod_name">Kept-lock V1.0 (White)</h3>
+                <p class="prod_price">4000 THB</p>
+                <a class="btn">Place an Order</a>
+        
+            </div>
+
+             <div class="box">
+                <img src="https://www.parcelhome.com/wp-content/uploads/2020/12/parcelhome-filled-with-packages-black.jpg.webp" alt="" class="prod_pic">
+                <h3 class="prod_name">Kept-lock V1.0 (Black)</h3>
+                <p class="prod_price">4000 THB</p>
+                <a class="btn">Place an Order</a>
+        
+            </div>
+          
+        </div>
+    
+    </section>
+    
+    <!-- product section ends -->
+
+    <!-- login section starts  -->
+
+    <section class="login_home">
+    
+        <h1 class="heading"> Already own the product?</h1>
+    
+        <div class="row">
+          
+          <div class="image">
+            <img src="https://cdn.discordapp.com/attachments/802176047096922175/957722877518544956/logo_prev_ui.png" alt="">
+        </div>
+
+        <div class="stuff">
+          <p> An account is required to accessKept-lock services!</p>
+          <a href="http://127.0.0.1:8000/keptlock/user/login" class="btn_log">Login</a>
+          <a href="http://127.0.0.1:8000/keptlock/user/register"class="btn_sig">Sign Up</a>
+    
+        </div>
+      </div>
+    </section>
+    
+    <!-- login section ends -->
+        
+    
+  </body>
+
+</html>
+
