@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, flash
 from flask_login import login_user, login_required, current_user, logout_user, LoginManager
 import os
+import babel
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -29,16 +30,23 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
+    if current_user.is_authenticated:
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
     return render_template('index.html')
 
 
 @app.route('/keptlock/user/register')
 def register_page():
+    if current_user.is_authenticated:
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
     return render_template('signup.html')
 
 
 @app.route('/keptlock/user/register', methods=['POST'])
 def register_api():
+    if current_user.is_authenticated:
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
+
     fname = request.form['fname_reg']
     lname = request.form['lname_reg']
     mobile = request.form['mobile_reg']
@@ -68,11 +76,15 @@ def register_api():
 
 @app.route('/keptlock/user/login')
 def login_page():
+    if current_user.is_authenticated:
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
     return render_template('login.html')
 
 
 @app.route('/keptlock/user/login', methods=['POST'])
 def login_api():
+    if current_user.is_authenticated:
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
     username = request.form['username']
     password = request.form['password']
 
@@ -95,13 +107,7 @@ def login_api():
     # login success
     else:
         login_user(user_info_login, remember=True)
-        return redirect('http://127.0.0.1:8000/keptlock/device')
-
-
-@app.route('/keptlock/device')
-@login_required
-def device():
-    return render_template('device.html', username=current_user.username)
+        return redirect('http://127.0.0.1:8000/keptlock/locker')
 
 
 @app.route('/keptlock/user/logout')
@@ -124,6 +130,82 @@ def crud_api(uid):
     return uid
 
 
+# locker api
+@app.route('/keptlock/locker')
+@login_required
+def lockers_page():
+    uid = current_user.id
+    # TODO: query all the device based on user id
+
+    from db_struct.locker import Locker
+    # mock up variable, need to be query from db
+    locker1 = Locker(1234, "Pitsinee", "ABCDEFG", 3, 3, 1)
+    locker2 = Locker(1235, "Mind", "AB12345", 3, 3, 1)
+    locker3 = Locker(1236, "Mickey's owner", "1234EFG", 3, 3, 1)
+    locker4 = Locker(1246, "Minnie's owner", "1245nFG", 3, 3, 1)
+
+    lockers = [locker1, locker2, locker3, locker4]
+
+    return render_template('device.html', username=current_user.username, lockers=lockers)
+
+
+@app.route('/keptlock/locker', methods=['POST'])
+@login_required
+def add_locker_api():
+    serial = request.form['serial']
+    # TODO: query the device according to the serial to check if the serial exists
+
+    serial_exist = True
+
+    if not serial_exist:
+        flash("The serial does not exist, please contact admin for further help")
+    else:
+        flash("New device added!")
+    return redirect("http://127.0.0.1:8000/keptlock/locker#")
+
+
+@app.route('/keptlock/locker', methods=['POST'])
+@login_required
+def create_locker_api():
+    r = request.json
+    return r
+
+
+@app.route('/keptlock/locker/<lid>', methods=['PUT', 'GET', 'DELETE'])
+def rud_locker_api(lid):
+    print(lid)
+    if request.method == 'PUT':
+        print('put', lid)
+    elif request.method == 'GET':
+        # TODO: query history and active pin of the locker from locker id
+
+        # mock up data
+        from db_struct.pin import Pin
+        import datetime
+        pin1 = Pin(1234, 121212, 1324234, datetime.datetime.now(), 2, "valid")
+        pin2 = Pin(3243, 454545, 1324234, datetime.datetime.now(), 1, "valid")
+        pin3 = Pin(2342, 676767, 1324234, datetime.datetime.now(), 2, "valid")
+        pin4 = Pin(5676, 787878, 1324234, datetime.datetime.now(), 3, "valid")
+
+        pin = [pin1, pin2, pin3, pin4]
+
+        from db_struct.history import History
+        his1 = History(1432, 1324234, datetime.datetime.now(), 1, "static/vid.pune.mov", "static/vid.pond.mov")
+        his2 = History(3546, 1324234, datetime.datetime.now(), 2, "static/vid.pune.mov", "static/vid.pond.mov")
+        his3 = History(2343, 1324234, datetime.datetime.now(), 3, "static/vid.pune.mov", "static/vid.pond.mov")
+        his4 = History(1643, 1324234, datetime.datetime.now(), 2, "static/vid.pune.mov", "static/vid.pond.mov")
+
+        history = [his1, his2, his3, his4]
+
+        return render_template("locker.html", pin=pin, history=history)
+
+    elif request.method == 'DELETE':
+        print('delete', lid)
+    return lid
+
+
+# hading cache and error
+
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -137,9 +219,17 @@ def not_found(e):
 
 
 @app.errorhandler(401)
-def not_found(e):
-    flash("You trying to access the service while not logging in")
-    return render_template('error.html'), 401
+def unauthorized(e):
+    return redirect('http://127.0.0.1:8000/keptlock/user/login')
+
+
+@app.template_filter()
+def format_datetime(value, form='date'):
+    if form == 'time':
+        form = "HH:mm"
+    elif form == 'date':
+        form = "dd.MM.yy"
+    return babel.dates.format_datetime(value, form)
 
 
 if __name__ == '__main__':

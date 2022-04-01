@@ -459,7 +459,7 @@ section{
   align-items: center;
 }
 
-.login .exists{
+.exists{
     padding:3rem;
     background: #ed5563;
     color: var(--white);
@@ -467,7 +467,21 @@ section{
     font-size: 1.5rem;
 }
 
-.login .exists a{
+.exists a{
+    color: var(--white);
+    text-decoration: underline;
+}
+
+
+.complete{
+    padding:3rem;
+    background: #00bbb4;
+    color: var(--white);
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.complete a{
     color: var(--white);
     text-decoration: underline;
 }
@@ -1020,6 +1034,18 @@ section{
 .popup .btn_can:hover{
     background: var(--light-color);
     color:var(--white);
+}
+
+.popup form{
+  display: grid;
+    grid-auto-flow: row;
+
+}
+
+.popup .button{
+    display: flex;
+    flex-wrap: wrap;
+    justify-self: center;
 }
 
 .popup form input{
