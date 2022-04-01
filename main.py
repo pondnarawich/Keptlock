@@ -13,9 +13,9 @@ login_manager.session_protection = "strong"
 
 @login_manager.user_loader
 def load_user(user_id):
-     #TODO Chane to query data base kong mng either sql or no sql, this to store user info when already login
-    # return User.query.get(int(user_id))
+    # TODO Chane to query data base kong mng either sql or no sql, this to store user info when already login
 
+    # mock up variable, need to be from checking with db
     from db_struct.user import User
     user_info = User
     user_info.id = 12345678
@@ -46,8 +46,9 @@ def register_api():
     username = request.form['username_reg']
     password = request.form['password_reg']
 
-    #TODO validate username email mobile. Are they unique? if ok then add to db
+    # TODO validate username email mobile. Are they unique? if ok then add to db
 
+    # mock up variable, need to be from checking with db
     uname_unique = True
     email_unique = True
     mobile_unique = True
@@ -75,13 +76,13 @@ def login_api():
     username = request.form['username']
     password = request.form['password']
 
-    user = True
-    checked_pass = True
-
     from db_struct.user import User
     user_info_login = User(12345, "gunn", "chai", "62011118@kmitl.ac.th", "0970047016", "gnnchya", "gnnchya", None, None, None)
 
-    #TODO Check the user and password in the database
+    # TODO Check the user and password in the database
+    # mock up variable, need to be from checking with db
+    user = True
+    checked_pass = True
 
     # No username in the database
     if not user:
@@ -133,6 +134,7 @@ def after_request(response):
 def not_found(e):
     flash("Page not found")
     return render_template('error.html'), 404
+
 
 @app.errorhandler(401)
 def not_found(e):
