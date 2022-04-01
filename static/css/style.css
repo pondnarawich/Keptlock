@@ -634,8 +634,10 @@ section{
     color: var(--navy);
     font-size:1.3rem;
     display: flex;
-    align-items: center;    
+    align-items: center;
+    cursor: pointer;
 }
+
 
 .device .locker .history .his_rec .icons{
     margin-left:0.5rem; 
@@ -671,6 +673,10 @@ section{
     margin: 1rem;  
     gap:1.5rem;
     padding: 2rem 0 2rem 0;
+    display: grid;
+    grid-auto-flow: row;
+    align-self: center;
+    /*justify-items: center;*/
 }
 
 .device .locker .control .open .slot{
@@ -694,7 +700,7 @@ section{
     background:var(--yellow);
     color: var(--black);
 }
-.device .locker .control .open .slot h1:hover{
+.device .locker .control .open .slot:hover h1{
     color: var(--black);
 }
 

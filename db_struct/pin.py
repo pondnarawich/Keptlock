@@ -1,5 +1,5 @@
 class Pin:
-    def __init(self,id,code,oid,date_time,slot,status):
+    def __init__(self,id,code,oid,date_time,slot,status):
         self.id = id
         self.code = code
         self.oid = oid

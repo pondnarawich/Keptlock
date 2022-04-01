@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, session
 from flask_login import login_user, login_required, current_user, logout_user, LoginManager
 import os
-import babel
+from babel.dates import format_datetime
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -171,15 +171,30 @@ def create_locker_api():
     return r
 
 
-@app.route('/keptlock/locker/<lid>', methods=['PUT', 'GET', 'DELETE'])
+@app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 def rud_locker_api(lid):
     print(lid)
+    if request.method == 'POST':
+        for key in request.form:
+            if key.startswith('open.'):
+                slot = key.partition('.')[-1]
+                # TODO do something with the locker
+                print("turn on slot no.", slot)
+                return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
+            if key.startswith('del_pin.'):
+                pin = key.partition('.')[-1]
+                session['lid'] = lid
+                return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/"+pin)
+
     if request.method == 'PUT':
         print('put', lid)
     elif request.method == 'GET':
         # TODO: query history and active pin of the locker from locker id
 
         # mock up data
+        from db_struct.locker import Locker
+        locker = Locker(1234, "Pitsinee", "ABCDEFG", 3, 3, 1)
+
         from db_struct.pin import Pin
         import datetime
         pin1 = Pin(1234, 121212, 1324234, datetime.datetime.now(), 2, "valid")
@@ -190,19 +205,74 @@ def rud_locker_api(lid):
         pin = [pin1, pin2, pin3, pin4]
 
         from db_struct.history import History
-        his1 = History(1432, 1324234, datetime.datetime.now(), 1, "static/vid.pune.mov", "static/vid.pond.mov")
-        his2 = History(3546, 1324234, datetime.datetime.now(), 2, "static/vid.pune.mov", "static/vid.pond.mov")
-        his3 = History(2343, 1324234, datetime.datetime.now(), 3, "static/vid.pune.mov", "static/vid.pond.mov")
-        his4 = History(1643, 1324234, datetime.datetime.now(), 2, "static/vid.pune.mov", "static/vid.pond.mov")
+        his1 = History(1432, 1324234, datetime.datetime.now(), 1, 3456)
+        his2 = History(3546, 1324234, datetime.datetime.now(), 2, 1234)
+        his3 = History(2343, 1324234, datetime.datetime.now(), 3, 2454)
+        his4 = History(1643, 1324234, datetime.datetime.now(), 2, 6437)
 
         history = [his1, his2, his3, his4]
 
-        return render_template("locker.html", pin=pin, history=history)
+        return render_template("locker.html", pins=pin, histories=history, locker=locker, username=current_user.username)
 
     elif request.method == 'DELETE':
         print('delete', lid)
+
+
+
+
+# pin
+
+
+@app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
+def generate_pin_api(lid):
+    print(lid)
     return lid
 
+
+@app.route('/keptlock/locker/unlock/<pid>', methods=['PUT', 'GET', 'DELETE'])
+def rud_pin_api(pid):
+    print(pid)
+    lid = session['lid']
+    if request.method == 'PUT':
+        print('put', pid)
+    elif request.method == 'GET':
+        print('get', pid)
+        # TODO Delete in the database
+    elif request.method == 'DELETE':
+        print('delete', pid)
+    return redirect("http://127.0.0.1:8000/keptlock/locker/" + lid + "#")
+
+
+@app.route('/keptlock/locker/unlock/<pid>', methods=['POST'])
+def unlock_api(pid):
+    print(pid)
+    return pid
+
+# video
+
+
+@app.route('/keptlock/locker/video', methods=['POST'])
+def add_video_api():
+    r = request.json
+    return r
+
+
+@app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
+def rud_video_api(vid):
+    print(vid)
+    if request.method == 'PUT':
+        print('put', vid)
+    elif request.method == 'GET':
+        print('get', vid)
+    elif request.method == 'DELETE':
+        print('delete', vid)
+        return
+
+
+@app.route('/keptlock/locker/video', methods=['GET'])
+def readall_locker_api():
+    r = request.json
+    return r
 
 # hading cache and error
 
@@ -229,7 +299,7 @@ def format_datetime(value, form='date'):
         form = "HH:mm"
     elif form == 'date':
         form = "dd.MM.yy"
-    return babel.dates.format_datetime(value, form)
+    return format_datetime(value, form)
 
 
 if __name__ == '__main__':
