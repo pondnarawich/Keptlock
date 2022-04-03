@@ -42,6 +42,10 @@
       <div class="content_small">
           <h1>{{locker.name}}</h1>
       </div>
+
+       <a class="icons" href="#change_name">
+          <div class="fas fa-pencil"></div>
+      </a>
     
     
     </section>
@@ -131,6 +135,21 @@
     </div>
   {% endfor %}
 
+   <div id="change_name" class="overlay">
+      <div class="popup">
+        <h2>Edit name</h2>
+        <div class="content">
+          Please enter a new name for your locker
+        </div>
+           <form action="" method="post">
+            <input type="text" id="name"  name="name" placeholder="ex: my office locker"/>
+              <div class="button">
+                  <input name="change.name" type="submit" value="Confirm" class="btn_con">
+                  <a href="#"class="btn_can">Cancel</a>
+              </div>
+          </form>
+      </div>
+    </div>
 
     </section> 
         

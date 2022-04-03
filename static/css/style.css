@@ -379,6 +379,19 @@ section{
   padding-bottom: 0.5rem;
 }
 
+.motto_small .icons{
+  color: var(--light_dark_grey);
+  padding-left: 2rem;
+    font-size: 2rem;
+}
+
+.motto_small .icons:hover{
+  color: var(--yellow);
+    transform: scale(1.01);
+    cursor: pointer;
+
+}
+
 .motto .content{
     width:30rem;
 }
@@ -878,6 +891,20 @@ section{
     background: var(--yellow);
 }
 
+.device .video-container .info{
+    margin: 2rem;
+    display: flex;
+    padding-top: 2rem;
+}
+
+
+.device .video-container .info h1{
+    color: var(--black);
+    font-size: 1.5rem;
+    margin: 2rem;
+}
+
+
 .device .video-container .video .btn:hover{
     color:var(--white);
     background: var(--navy);
@@ -1170,6 +1197,7 @@ section{
     justify-items: center;
 }
 
+
 .gen_pin .locker .control h2{
  font-size: 2rem;
   color: var(--white);
@@ -1263,6 +1291,7 @@ section{
   margin-top: 3rem;
 }
 
+
 .gen_pin .locker .control .pin .pin_his .sub input{
   display: inline-block;
 /*   float: left; */
@@ -1277,6 +1306,7 @@ section{
   font-size: 2rem;
   margin-top: 3rem;
 }
+
 
 .gen_pin .locker .control .pin .pin_his .sub2 input{
   display: inline-block;
@@ -1293,7 +1323,7 @@ section{
   margin-top: 3rem;
 }
 
-.gen_pin .locker .control .pin .pin_his .sub form .align{
+.gen_pin .locker .control .pin .pin_his .sub .align{
   display: flex;
   align-items: center;
 /*   flex-wrap: wrap; */
@@ -1306,7 +1336,7 @@ section{
   
 }
 
-.gen_pin .locker .control .pin .pin_his .sub2 form .align{
+.gen_pin .locker .control .pin .pin_his .sub2 .align{
   display: flex;
   align-items: center;
 /*   flex-wrap: wrap; */
@@ -1343,7 +1373,7 @@ section{
 } 
 
 
-.gen_pin .locker .control .pin .pin_his .sub form label{
+.gen_pin .locker .control .pin .pin_his .sub label{
   font-size: 1.5rem;
   margin-top: 2rem;
 }
@@ -1357,7 +1387,7 @@ section{
   color: var(--black);
 }
 
-.gen_pin .locker .control .pin .pin_his input:hover + label{
+.gen_pin .locker .control .pin .pin_his input[type="radio"]:hover + label{
   background: var(--yellow);
   color: var(--white);
 }

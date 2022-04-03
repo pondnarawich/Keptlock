@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash, session
+from flask import Flask, request, render_template, redirect, flash, session, url_for
 from flask_login import login_user, login_required, current_user, logout_user, LoginManager
 import os
 from babel.dates import format_datetime
@@ -183,6 +183,7 @@ def rud_locker_api(lid):
         return redirect("http://127.0.0.1:8000/keptlock/locker#")
 
     if request.method == 'POST':
+        session['uid'] = current_user.id
         for key in request.form:
             if key.startswith('open.'):
                 slot = key.partition('.')[-1]
@@ -193,6 +194,11 @@ def rud_locker_api(lid):
                 pin = key.partition('.')[-1]
                 session['lid'] = lid
                 return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/"+pin)
+            if key.startswith('change.'):
+                name = request.form['name']
+                print(name)
+                # TODO change name in the db according to the lid
+                return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
 
     if request.method == 'PUT':
         print('put', lid)
@@ -219,27 +225,51 @@ def rud_locker_api(lid):
         his4 = History(1643, 1324234, datetime.datetime.now(), 2, 6437)
 
         history = [his1, his2, his3, his4]
-
-        return render_template("locker.html", pins=pin, histories=history, locker=locker, username=current_user.username)
+        session["lid"] = lid
+        return render_template("locker.html", pins=pin, histories=history, locker=locker, username=current_user.username, lid=lid)
 
     elif request.method == 'DELETE':
         print('delete', lid)
 
 
-
-
 # pin
+
+@app.route('/keptlock/locker/unlock/pin/<lid>')
+def generate_pin_page(lid):
+    return render_template("pin.html", username=current_user.username)
 
 
 @app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
 def generate_pin_api(lid):
-    print(lid)
-    return lid
+    slot = request.form['open']
+    print(slot)
+    if request.form['time'] == "time_range":
+        start = request.form['start_time']
+        end = request.form['end_time']
+        print(start)
+        print(end)
+        # TODO do something with DB
+    elif request.form['time'] == "time_countdown":
+        countdown = request.form['countdown']
+        print(countdown)
+
+        # TODO do something with DB
+
+    return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
 
 
 @app.route('/keptlock/locker/unlock/<pid>', methods=['PUT', 'GET', 'DELETE'])
 def rud_pin_api(pid):
     print(pid)
+
+    # TODO query to get uid from lid,
+
+    # mock up data
+    uid = 12345678
+    if uid != current_user.id:
+        flash("You trying to access other's locker!")
+        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+
     lid = session['lid']
     if request.method == 'PUT':
         print('put', pid)
@@ -268,19 +298,42 @@ def add_video_api():
 @app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
 def rud_video_api(vid):
     print(vid)
+    lid = session["lid"]
+    # TODO query to get uid from lid,
+
+    # mock up data
+    uid = 12345678
+    if uid != current_user.id:
+        flash("You trying to access other's locker!")
+        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+
     if request.method == 'PUT':
         print('put', vid)
     elif request.method == 'GET':
-        print('get', vid)
+        # TODO get all the info from the db from vid
+
+        # mock up data
+        from db_struct.video import Video
+        import datetime
+        vid = Video(3456, 1324234, datetime.datetime.now(), 1, "pond2.mp4", "pune2.mp4")
+
+        return render_template("video.html", username=current_user.username, vid=vid, lid=lid)
     elif request.method == 'DELETE':
         print('delete', vid)
         return
+
+
+@app.route('/display/<filename>')
+def display_video(filename):
+    # print('display_video filename: ' + filename)
+    return redirect(url_for('static', filename='vid/' + filename), code=301)
 
 
 @app.route('/keptlock/locker/video', methods=['GET'])
 def readall_locker_api():
     r = request.json
     return r
+
 
 # hading cache and error
 
