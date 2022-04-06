@@ -5,6 +5,7 @@
     --black:#130f40;
     --white:#FFFFFF;
     --navy: #202A44;
+    --red: #ed5563;
     --light_navy: #283855;
     --light_grey: #949494;
     --light_dark_grey: #505050;
@@ -474,7 +475,7 @@ section{
 
 .exists{
     padding:3rem;
-    background: #ed5563;
+    background: var(--red);
     color: var(--white);
     text-align: center;
     font-size: 1.5rem;
@@ -707,6 +708,23 @@ section{
 .device .locker .control .open .slot h1{
     color: var(--white);
 }
+
+.device .locker .control .open .slot_no{
+/*     max-height: 8rem;
+    max-width: 8rem; */
+    border-radius: 0.5rem;
+    background:var(--red);
+    color: var(--white);
+    text-align: center;
+    margin: 2rem;
+    gap:1.5rem;
+    padding:1.5rem 1rem;
+}
+
+.device .locker .control .open .slot_no h1{
+    color: var(--white);
+}
+
 
 .device .locker .control .open .slot:hover{
     transform: scale(1.01);

@@ -60,10 +60,20 @@
         <h2 class="heading"> Controller</h2>
         <div class="control">
           <div class="open">
-            {% for slot in range(locker.size) %}
-             <a class="button" href="#popup{{slot}}"><div class="slot">
-              <h1>Open Slot #{{slot+1}}</h1>
-            </div></a>
+            {% set count = namespace(value=0) %}
+            {% for slot in slots %}
+              {% set count.value = count.value + 1 %}
+              {% if not slot.opened %}
+                 <a class="button" href="#popup{{count.value}}"><div class="slot">
+                  <h1>Open Slot #{{count.value}}</h1>
+                </div></a>
+              {% else %}
+              {% if slot.opened%}
+                  <a class="button" href="#popup{{count.value}}" disabled><div class="slot_no">
+                  <h1>Slot #{{count.value}} is opened</h1>
+                </div></a>
+              {% endif %}
+              {% endif %}
             {% endfor %}
           </div> 
 

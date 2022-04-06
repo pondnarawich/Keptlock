@@ -209,6 +209,11 @@ def rud_locker_api(lid):
         from db_struct.locker import Locker
         locker = Locker(1234, "Pitsinee", "ABCDEFG", 3, 3, 1)
 
+        from db_struct.slot import Slot
+        slot1 = Slot(1, False)
+        slot2 = Slot(1, False)
+        slot3 = Slot(1, True)
+
         from db_struct.pin import Pin
         import datetime
         pin1 = Pin(1234, 121212, 1324234, datetime.datetime.now(), 2, "valid")
@@ -225,8 +230,9 @@ def rud_locker_api(lid):
         his4 = History(1643, 1324234, datetime.datetime.now(), 2, 6437)
 
         history = [his1, his2, his3, his4]
+        slots = [slot1, slot2, slot3]
         session["lid"] = lid
-        return render_template("locker.html", pins=pin, histories=history, locker=locker, username=current_user.username, lid=lid)
+        return render_template("locker.html", pins=pin, histories=history, locker=locker, slots=slots, username=current_user.username, lid=lid)
 
     elif request.method == 'DELETE':
         print('delete', lid)
