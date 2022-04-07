@@ -69,7 +69,7 @@
                 </div></a>
               {% else %}
               {% if slot.opened%}
-                  <a class="button" href="#popup{{count.value}}" disabled><div class="slot_no">
+                  <a class="button"  disabled><div class="slot_no">
                   <h1>Slot #{{count.value}} is opened</h1>
                 </div></a>
               {% endif %}
@@ -133,7 +133,7 @@
       <div class="popup">
         <h2>Confirmation</h2>
         <div class="content">
-          Are you sure, you want to unlock slot #{{slot}} ?
+          Are you sure, you want to unlock slot #{{slot+1}} ?
         </div>
           <form action="" method="post">
               <div class="button">
