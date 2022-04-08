@@ -1102,6 +1102,7 @@ section{
 .popup form input{
   background: var(--light-color);
   color: var(--black);
+    text-align: center;
   font-size: 3rem;
   padding: 0.5rem 5rem;
   border-radius: .5rem;
@@ -1645,6 +1646,7 @@ section{
     overflow: scroll;
   border-radius: 0.5rem;
 }
+
 
 
 .device .locker .control .pin .pin_his .pin_his_box .pin_his_rec .btn_pin{

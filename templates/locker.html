@@ -77,6 +77,13 @@
             {% endfor %}
           </div> 
 
+            {% with messages = get_flashed_messages() %}
+            {% if messages%}
+                <div class="exists">
+                    <h3> {{ messages[0] }}.</h3>
+                </div>
+            {% endif %}
+            {% endwith %}
         
         <div class="pin">
             <a onclick="location.href='http://127.0.0.1:8000/keptlock/locker/unlock/pin/{{lid}}';"><div class="box" >
@@ -97,15 +104,22 @@
             </div>
 
             <div class="pin_his_box">
+            {% if pins is not none %}
             {% for pin in pins %}
             <div class="pin_his_rec">
-              <h1>{{ pin.date_time.strftime('%d-%m-%Y')}}</h1>
-              <h1>{{ pin.date_time.strftime('%H:%M')}}</h1>
+              <h1>{{ pin.date_end.strftime('%d-%m-%Y')}}</h1>
+              <h1>{{ pin.date_end.strftime('%H:%M')}}</h1>
               <h1>{{ pin.slot}}</h1>
               <h1>{{ pin.code }}</h1>
               <form method="post"><input type="submit" value="Cancel" name="del_pin.{{pin.id}}" class="btn_pin"></form>
             </div>
             {% endfor %}
+            {% else%}
+              <div class="no_pin">
+              No active pin
+            </div>
+            {% endif%}
+
             </div>
           </div>
         </div>
@@ -113,6 +127,7 @@
 
         <h2 class="heading"> History</h2>
         <div class="history">
+            {% if histories is not none %}
            {% for his in histories %}
             <div class="his_rec">
               <h1>{{ his.date_time.strftime('%d-%m-%Y')}}</h1>
@@ -124,6 +139,11 @@
               </a>
             </div>
             {% endfor %}
+             {% else%}
+            <div class="his_rec">
+              <h1>No history</h1>
+            </div>
+            {% endif%}
         </div>           
     </div>
 
