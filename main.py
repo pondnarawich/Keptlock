@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 cur_pin = set()
 
+UPLOAD_FOLDER = '/static/vid'
 
 # CREATE CLASS FOR DATABASE
 class User(db.Model):
@@ -81,7 +82,6 @@ class Locker(db.Model):
 
 class History(db.Model):
     id = db.Column(db.String(50), primary_key=True)
-    uid = db.Column(db.String(50))
     lid = db.Column(db.String(50))
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     slot = db.Column(db.Integer)
@@ -103,7 +103,6 @@ class Slot(db.Model):
 
 class Video(db.Model):
     id = db.Column(db.String(50), primary_key=True)
-    uid = db.Column(db.String(50))
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     slot = db.Column(db.Integer)
     vid1 = db.Column(db.String(50))
@@ -129,12 +128,12 @@ def code_generator(size=6, chars=string.digits):
             return pin
 
 
-def temp_his(lid, current_user):
+def temp_his(lid):
     print("created")
     vid_id = str(uuid.uuid4())
-    new_vid = Video(id=vid_id, uid=current_user.id, date_time=datetime.now(), slot=1, vid1="pond2.mp4", vid2="pune2.mp4")
+    new_vid = Video(id=vid_id, date_time=datetime.now(), slot=1, vid1="pond2.mp4", vid2="pune2.mp4")
     db.session.add(new_vid)
-    new_his = History(id=str(uuid.uuid4()), uid=current_user.id, lid=lid, date_time=datetime.now(), slot=1, vid_id=vid_id)
+    new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=1, vid_id=vid_id)
     db.session.add(new_his)
     db.session.commit()
 
@@ -155,6 +154,7 @@ def create_locker(size=3):
         slot = Slot(id=str(uuid.uuid4()), lid=locker_id, slot_no=i)
         db.session.add(slot)
     db.session.commit()
+    return Locker
 
 
 # create_locker()
@@ -325,16 +325,18 @@ def add_locker_api():
     return redirect("http://127.0.0.1:8000/keptlock/locker#")
 
 
+# TODO need testing
 @app.route('/keptlock/locker', methods=['POST'])
 @login_required
 def create_locker_api():
-    return create_locker()
+    slot = request.json['slot']
+    return create_locker(int(slot))
 
 
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
-    # temp_his(lid, current_user)
+    # temp_his(lid)
     check_own = Owner.query.filter_by(lid=lid).all()
     authorized = False
     for user in check_own:
@@ -373,7 +375,8 @@ def rud_locker_api(lid):
         locker = Locker.query.filter_by(id=lid).first()
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
-        history = History.query.filter_by(lid=lid, uid=current_user.id).all()
+        # TODO ask pond if want to show only for the action of that user or all user on a single locker
+        history = History.query.filter_by(lid=lid).all()
 
         if not pin:
             pin = None
@@ -477,7 +480,7 @@ def rud_pin_api(pid):
     elif request.method == 'GET':
         print('get', pid)
         try:
-            pin = Pin.query.filter_by(id=pid).first()
+            # pin = Pin.query.filter_by(id=pid).first()
             # renew_code(pin.code)
             Pin.query.filter_by(id=pid).delete()
             db.session.commit()
@@ -500,11 +503,30 @@ def unlock_api(pid):
 # video
 
 
+# TODO need testing
 @app.route('/keptlock/locker/video', methods=['POST'])
-@login_required
 def add_video_api():
-    r = request.json
-    return r
+    if 'video' not in request.files:
+        return "something went wrong", 400
+
+    vid1 = request.files["vid1"]
+    vid2 = request.files["vid2"]
+    if vid1 and vid2:
+        vid1.save(os.path.join(app.config['UPLOAD_FOLDER'], vid1.filename))
+        vid2.save(os.path.join(app.config['UPLOAD_FOLDER'], vid2.filename))
+
+        lid_pi = request.json['lid']
+        slot = request.json['slot']
+        vid_id = str(uuid.uuid4())
+        try:
+            new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=vid1.filename, vid2=vid2.filename)
+            db.session.add(new_vid)
+            new_his = History(id=str(uuid.uuid4()), lid=lid_pi, date_time=datetime.now(), slot=slot, vid_id=vid_id)
+            db.session.add(new_his)
+            db.session.commit()
+            return "ok", 200
+        except:
+            return "something went wrong", 400
 
 
 @app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
@@ -524,7 +546,6 @@ def rud_video_api(vid):
     if request.method == 'PUT':
         print('put', vid)
     elif request.method == 'GET':
-        # TODO get all the info from the db from vid
         video = Video.query.filter_by(id=vid).first()
 
         # # mock up data
@@ -566,6 +587,12 @@ def not_found(e):
     return render_template('error.html'), 404
 
 
+@app.errorhandler(500)
+def not_found(e):
+    flash("Something went wrong")
+    return render_template('error.html'), 500
+
+
 @app.errorhandler(401)
 def unauthorized(e):
     return redirect('http://127.0.0.1:8000/keptlock/user/login')
@@ -588,6 +615,7 @@ if __name__ == '__main__':
     # to manage the secret key!
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     app.debug = True
     app.run(host='127.0.0.1', port=8000)
