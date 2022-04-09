@@ -501,12 +501,16 @@ def rud_pin_api(pid):
     return redirect("http://127.0.0.1:8000/keptlock/locker/" + lid + "#")
 
 
-@app.route('/keptlock/locker/unlock/<pid>', methods=['POST'])
-def unlock_pin_api(pid):
-    print(pid)
-    pin = Pin.query.filter_by(id=pid).first()
+@app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
+def unlock_pin_api(lid):
+    print(lid)
+    code = request.json['code']
+    pin = Pin.query.filter_by(lid=lid, code=str(code), status="unused").first()
+
+    if not pin:
+        return "Pin is invalid or expired", 400
     # renew_code(pin.code)
-    return pid
+    return pin, 200
 
 
 @app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
