@@ -327,7 +327,6 @@ def add_locker_api():
 
 # TODO need testing
 @app.route('/keptlock/locker', methods=['POST'])
-@login_required
 def create_locker_api():
     slot = request.json['slot']
     return create_locker(int(slot))
