@@ -351,6 +351,10 @@ def rud_locker_api(lid):
         for key in request.form:
             if key.startswith('open.'):
                 slot = key.partition('.')[-1]
+                slot_info = Slot.query.filter_by(lid=lid, slot_no=slot).first()
+                if slot_info.opened:
+                    flash("Something went wrong, try again")
+
                 # TODO do something with the locker
                 print("turn on slot no.", slot)
                 return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
@@ -492,12 +496,24 @@ def rud_pin_api(pid):
 
 
 @app.route('/keptlock/locker/unlock/<pid>', methods=['POST'])
-@login_required
-def unlock_api(pid):
+def unlock_pin_api(pid):
     print(pid)
     pin = Pin.query.filter_by(id=pid).first()
     # renew_code(pin.code)
     return pid
+
+
+@app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
+def slot_update_api(lid):
+    slots = request.json['slots']
+    try:
+        slot_db = Slot.query.filter_by(lid=lid).all()
+        for no, slot in enumerate(slot_db):
+            slot.status = slots[no]
+        db.session.commit()
+    except:
+        return "something went wrong", 400
+    return "ok", 200
 
 # video
 
