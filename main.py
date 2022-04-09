@@ -351,8 +351,14 @@ def rud_locker_api(lid):
         for key in request.form:
             if key.startswith('open.'):
                 slot = key.partition('.')[-1]
-                slot_info = Slot.query.filter_by(lid=lid, slot_no=slot).first()
-                if slot_info.opened:
+                try:
+                    slot_info = Slot.query.filter_by(lid=lid, slot_no=slot).first()
+                    if slot_info.opened:
+                        flash("Something went wrong, try again")
+                    else:
+                        slot_info.opened = True
+                        db.session.commit()
+                except:
                     flash("Something went wrong, try again")
 
                 # TODO do something with the locker
