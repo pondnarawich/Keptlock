@@ -54,7 +54,16 @@
     
     <!-- motto section ends -->
 
+
+
    <section class="device">
+      {% with messages = get_flashed_messages() %}
+            {% if messages%}
+                <div class="exists">
+                    <h3> {{ messages[0] }}.</h3>
+                </div>
+            {% endif %}
+            {% endwith %}
 
     <div class="locker" >
         <h2 class="heading"> Controller</h2>
@@ -77,13 +86,7 @@
             {% endfor %}
           </div> 
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages%}
-                <div class="exists">
-                    <h3> {{ messages[0] }}.</h3>
-                </div>
-            {% endif %}
-            {% endwith %}
+
         
         <div class="pin">
             <a onclick="location.href='http://127.0.0.1:8000/keptlock/locker/unlock/pin/{{lid}}';"><div class="box" >

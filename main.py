@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user, L
 import os
 # from babel.dates import format_datetime
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import (generate_password_hash, check_password_hash)
 import uuid
 import random
@@ -84,7 +84,7 @@ class History(db.Model):
     uid = db.Column(db.String(50))
     lid = db.Column(db.String(50))
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
-    slot_id = db.Column(db.Integer)
+    slot = db.Column(db.Integer)
     vid_id = db.Column(db.String(50))
 
     def __repr__(self):
@@ -94,6 +94,7 @@ class History(db.Model):
 class Slot(db.Model):
     id = db.Column(db.String(50), primary_key=True)
     lid = db.Column(db.String(30), nullable=False)
+    slot_no = db.Column(db.Integer, nullable=False)
     opened = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
@@ -104,7 +105,7 @@ class Video(db.Model):
     id = db.Column(db.String(50), primary_key=True)
     uid = db.Column(db.String(50))
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
-    slot_id = db.Column(db.String(50))
+    slot = db.Column(db.Integer)
     vid1 = db.Column(db.String(50))
     vid2 = db.Column(db.String(50))
 
@@ -120,7 +121,7 @@ def check_password(hashed, password):
     return check_password_hash(hashed, password)
 
 
-def id_generator(size=6, chars=string.digits):
+def code_generator(size=6, chars=string.digits):
     while True:
         pin = ''.join(random.choice(chars) for x in range(size))
         if pin not in cur_pin:
@@ -128,6 +129,22 @@ def id_generator(size=6, chars=string.digits):
             return pin
 
 
+def temp_his(lid, current_user):
+    print("created")
+    vid_id = str(uuid.uuid4())
+    new_vid = Video(id=vid_id, uid=current_user.id, date_time=datetime.now(), slot=1, vid1="pond2.mp4", vid2="pune2.mp4")
+    db.session.add(new_vid)
+    new_his = History(id=str(uuid.uuid4()), uid=current_user.id, lid=lid, date_time=datetime.now(), slot=1, vid_id=vid_id)
+    db.session.add(new_his)
+    db.session.commit()
+
+
+# TODO use this when the pin is used
+def renew_code(code):
+    return cur_pin.remove(code)
+
+
+# TODO use then when create new locker
 def create_locker(size=3):
     locker_id = str(uuid.uuid4())
     serial = str(uuid.uuid4())
@@ -135,12 +152,13 @@ def create_locker(size=3):
     new_locker = Locker(id=locker_id, serial=serial, size=size, row=size, col=1)
     db.session.add(new_locker)
     for i in range(size):
-        slot = Slot(id=str(uuid.uuid4()), lid=locker_id)
+        slot = Slot(id=str(uuid.uuid4()), lid=locker_id, slot_no=i)
         db.session.add(slot)
     db.session.commit()
 
 
 # create_locker()
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -314,7 +332,9 @@ def create_locker_api():
 
 
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
+@login_required
 def rud_locker_api(lid):
+    # temp_his(lid, current_user)
     check_own = Owner.query.filter_by(lid=lid).all()
     authorized = False
     for user in check_own:
@@ -350,8 +370,6 @@ def rud_locker_api(lid):
     if request.method == 'PUT':
         print('put', lid)
     elif request.method == 'GET':
-        # current_time = datetime.utcnow()
-
         locker = Locker.query.filter_by(id=lid).first()
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
@@ -361,6 +379,20 @@ def rud_locker_api(lid):
             pin = None
         if not history:
             history = None
+
+        if pin is not None:
+            for p in pin:
+                if p.date_end < datetime.now():
+                    p.status = 'expired'
+                    # renew_code(p.code)
+
+            try:
+                db.session.commit()
+                pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
+                if not pin:
+                    pin = None
+            except:
+                flash("Something went wrong, please try again")
 
         session["lid"] = lid
         return render_template("locker.html", pins=pin, histories=history, locker=locker, slots=slots, username=current_user.username, lid=lid)
@@ -372,21 +404,34 @@ def rud_locker_api(lid):
 # pin
 
 @app.route('/keptlock/locker/unlock/pin/<lid>')
+@login_required
 def generate_pin_page(lid):
     return render_template("pin.html", username=current_user.username)
 
 
 @app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
+@login_required
 def generate_pin_api(lid):
     slot = request.form['open']
-    code = id_generator()
+    code = code_generator()
     if request.form['time'] == "time_range":
         start = request.form['start_time']
         end = request.form['end_time']
-        print(start)
-        print(end)
+        if start == "" or end == "":
+            flash("Please select the valid time")
+            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/"+lid)
 
-        new_pin = User(id=str(uuid.uuid4()), code=code, uid=current_user.id, slot=slot, date_start=start, date_end=end)
+        start = datetime.strptime(start, '%Y-%m-%dT%H:%M')
+        end = datetime.strptime(end, '%Y-%m-%dT%H:%M')
+
+        if start <= datetime.now():
+            flash("The time interval must be in the future")
+            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
+        elif start > end:
+            flash("End time must be later than the start time")
+            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
+
+        new_pin = Pin(id=str(uuid.uuid4()), code=code, uid=current_user.id, slot=slot, lid=lid, date_start=start, date_end=end)
         try:
             db.session.add(new_pin)
             db.session.commit()
@@ -396,10 +441,14 @@ def generate_pin_api(lid):
     elif request.form['time'] == "time_countdown":
         countdown = request.form['countdown']
 
-        current_time = datetime.utcnow()
-        expired_date = current_time + datetime.timedelta(minutes=countdown)
+        if countdown == "":
+            flash("Please select the valid time")
+            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
 
-        new_pin = User(id=uuid.uuid4(), code=code, uid=current_user.id, slot=slot, date_end=expired_date)
+        current_time = datetime.now()
+        expired_date = current_time + timedelta(minutes=int(countdown))
+
+        new_pin = Pin(id=str(uuid.uuid4()), code=code, uid=current_user.id, lid=lid, slot=slot, date_end=expired_date)
         try:
             db.session.add(new_pin)
             db.session.commit()
@@ -410,6 +459,7 @@ def generate_pin_api(lid):
 
 
 @app.route('/keptlock/locker/unlock/<pid>', methods=['PUT', 'GET', 'DELETE'])
+@login_required
 def rud_pin_api(pid):
     lid = session['lid']
     check_own = Owner.query.filter_by(lid=lid).all()
@@ -426,28 +476,39 @@ def rud_pin_api(pid):
         print('put', pid)
     elif request.method == 'GET':
         print('get', pid)
-        pin_to_delete = Pin.query.get_or_404(pid)
-        db.session.delete(pin_to_delete)
+        try:
+            pin = Pin.query.filter_by(id=pid).first()
+            # renew_code(pin.code)
+            Pin.query.filter_by(id=pid).delete()
+            db.session.commit()
+        except:
+            flash("Something went wrong, Try again")
+
     elif request.method == 'DELETE':
         print('delete', pid)
     return redirect("http://127.0.0.1:8000/keptlock/locker/" + lid + "#")
 
 
 @app.route('/keptlock/locker/unlock/<pid>', methods=['POST'])
+@login_required
 def unlock_api(pid):
     print(pid)
+    pin = Pin.query.filter_by(id=pid).first()
+    # renew_code(pin.code)
     return pid
 
 # video
 
 
 @app.route('/keptlock/locker/video', methods=['POST'])
+@login_required
 def add_video_api():
     r = request.json
     return r
 
 
 @app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
+@login_required
 def rud_video_api(vid):
     lid = session["lid"]
     check_own = Owner.query.filter_by(lid=lid).all()
@@ -478,12 +539,14 @@ def rud_video_api(vid):
 
 
 @app.route('/display/<filename>')
+@login_required
 def display_video(filename):
     # print('display_video filename: ' + filename)
     return redirect(url_for('static', filename='vid/' + filename), code=301)
 
 
 @app.route('/keptlock/locker/video', methods=['GET'])
+@login_required
 def readall_locker_api():
     r = request.json
     return r
