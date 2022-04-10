@@ -66,6 +66,9 @@
             {% endwith %}
 
     <div class="locker" >
+        <h3 class="header_small">Serial : {{locker.serial}} <a class="icons" onclick="copy()">
+          <div class="fas fa-copy"></div>
+      </a></h3>
         <h2 class="heading"> Controller</h2>
         <div class="control">
           <div class="open">
@@ -184,7 +187,13 @@
       </div>
     </div>
 
-    </section> 
+    </section>
+
+  <script>
+      function copy() {
+      navigator.clipboard.writeText("{{locker.serial}}");
+}
+  </script>
         
     
   </body>
