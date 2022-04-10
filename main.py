@@ -501,7 +501,7 @@ def rud_pin_api(pid):
     return redirect("http://127.0.0.1:8000/keptlock/locker/" + lid + "#")
 
 
-@app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
+@app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
 def unlock_pin_api(lid):
     print(lid)
     code = request.json['code']
@@ -510,7 +510,7 @@ def unlock_pin_api(lid):
     if not pin:
         return "Pin is invalid or expired", 400
     # renew_code(pin.code)
-    return pin, 200
+    return pin.slot, 200
 
 
 @app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
@@ -531,7 +531,7 @@ def slot_update_api(lid):
 # TODO need testing
 @app.route('/keptlock/locker/video', methods=['POST'])
 def add_video_api():
-    if 'video' not in request.files:
+    if 'vid1' not in request.files:
         return "something went wrong", 400
 
     vid1 = request.files["vid1"]
