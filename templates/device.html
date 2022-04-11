@@ -13,6 +13,7 @@
 
     <!-- custom css file link  -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
 </head>
 
@@ -66,6 +67,8 @@
             {% endif %}
             {% endif %}
             {% endwith %}
+
+
         <a class=button href="#popup2"><div class="box">
           <div class="content">
             <h1>Add device</h1>
@@ -74,6 +77,13 @@
             <img src="https://cdn-icons-png.flaticon.com/512/117/117885.png" alt="">
           </div>
         </div></a>
+
+          {% if lockers is none%}
+                <div class="complete">
+                    <h3> You have no locker! try adding one</h3>
+                </div>
+            {% endif %}
+
     </section>
     
     <!-- motto section ends -->
@@ -81,6 +91,7 @@
    <section class="device">
 
     <div class="box-container">
+        {% if lockers is not none%}
         {% for locker in lockers %}
             <div class="box">
                 <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
@@ -88,6 +99,7 @@
                 <a href="http://127.0.0.1:8000/keptlock/locker/{{locker.id}}" class="btn">See more</a>
             </div>
         {% endfor %}
+        {% endif %}
 
     </div>
 

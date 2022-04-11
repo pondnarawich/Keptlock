@@ -13,7 +13,7 @@
 
     <!-- custom css file link  -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
   
@@ -54,9 +54,21 @@
     
     <!-- motto section ends -->
 
+
+
    <section class="device">
+      {% with messages = get_flashed_messages() %}
+            {% if messages%}
+                <div class="exists">
+                    <h3> {{ messages[0] }}.</h3>
+                </div>
+            {% endif %}
+            {% endwith %}
 
     <div class="locker" >
+        <h3 class="header_small">Serial : {{locker.serial}} <a class="icons" onclick="copy()">
+          <div class="fas fa-copy"></div>
+      </a></h3>
         <h2 class="heading"> Controller</h2>
         <div class="control">
           <div class="open">
@@ -69,13 +81,14 @@
                 </div></a>
               {% else %}
               {% if slot.opened%}
-                  <a class="button" href="#popup{{count.value}}" disabled><div class="slot_no">
+                  <a class="button"  disabled><div class="slot_no">
                   <h1>Slot #{{count.value}} is opened</h1>
                 </div></a>
               {% endif %}
               {% endif %}
             {% endfor %}
           </div> 
+
 
         
         <div class="pin">
@@ -97,15 +110,22 @@
             </div>
 
             <div class="pin_his_box">
+            {% if pins is not none %}
             {% for pin in pins %}
             <div class="pin_his_rec">
-              <h1>{{ pin.date_time.strftime('%d-%m-%Y')}}</h1>
-              <h1>{{ pin.date_time.strftime('%H:%M')}}</h1>
+              <h1>{{ pin.date_end.strftime('%d-%m-%Y')}}</h1>
+              <h1>{{ pin.date_end.strftime('%H:%M')}}</h1>
               <h1>{{ pin.slot}}</h1>
               <h1>{{ pin.code }}</h1>
               <form method="post"><input type="submit" value="Cancel" name="del_pin.{{pin.id}}" class="btn_pin"></form>
             </div>
             {% endfor %}
+            {% else%}
+              <div class="no_pin">
+              No active pin
+            </div>
+            {% endif%}
+
             </div>
           </div>
         </div>
@@ -113,6 +133,7 @@
 
         <h2 class="heading"> History</h2>
         <div class="history">
+            {% if histories is not none %}
            {% for his in histories %}
             <div class="his_rec">
               <h1>{{ his.date_time.strftime('%d-%m-%Y')}}</h1>
@@ -124,6 +145,11 @@
               </a>
             </div>
             {% endfor %}
+             {% else%}
+            <div class="his_rec">
+              <h1>No history</h1>
+            </div>
+            {% endif%}
         </div>           
     </div>
 
@@ -133,7 +159,7 @@
       <div class="popup">
         <h2>Confirmation</h2>
         <div class="content">
-          Are you sure, you want to unlock slot #{{slot}} ?
+          Are you sure, you want to unlock slot #{{slot+1}} ?
         </div>
           <form action="" method="post">
               <div class="button">
@@ -161,7 +187,13 @@
       </div>
     </div>
 
-    </section> 
+    </section>
+
+  <script>
+      function copy() {
+      navigator.clipboard.writeText("{{locker.serial}}");
+}
+  </script>
         
     
   </body>

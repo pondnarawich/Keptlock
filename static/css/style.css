@@ -609,10 +609,26 @@ section{
 .device .heading {
   text-align: center;
   padding:2rem 0 0 0;
-  padding-bottom: 3rem;
+  /*padding-bottom: 3rem;*/
   font-size: 3.5rem;
   color:var(--black);
 }
+
+.device .header_small {
+  text-align: center;
+  padding:2rem 0 0 0;
+  font-size: 1.5rem;
+  color:var(--black);
+}
+
+.device .header_small .icons{
+  text-align: center;
+  padding:2rem 0 0 0;
+  font-size: 1.5rem;
+  color:var(--black);
+  cursor: pointer;
+}
+
 
 .device .locker .history{
     border-radius: 1rem;
@@ -1102,6 +1118,7 @@ section{
 .popup form input{
   background: var(--light-color);
   color: var(--black);
+    text-align: center;
   font-size: 3rem;
   padding: 0.5rem 5rem;
   border-radius: .5rem;
@@ -1419,6 +1436,44 @@ section{
   display: block;
 }
 
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
 
 
 
@@ -1645,6 +1700,7 @@ section{
     overflow: scroll;
   border-radius: 0.5rem;
 }
+
 
 
 .device .locker .control .pin .pin_his .pin_his_box .pin_his_rec .btn_pin{
