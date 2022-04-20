@@ -503,6 +503,14 @@ def rud_pin_api(pid):
 
 @app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
 def unlock_pin_api(lid):
+    pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
+
+    if not pin:
+        for p in pin:
+            if p.date_end < datetime.now():
+                p.status = 'expired'
+                # renew_code(p.code)
+
     print(lid)
     code = request.json['code']
     pin = Pin.query.filter_by(lid=lid, code=str(code), status="unused").first()
