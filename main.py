@@ -358,6 +358,7 @@ def rud_locker_api(lid):
                     else:
                         slot_info.opened = True
                         db.session.commit()
+                #         sent to pi
                 except:
                     flash("Something went wrong, try again")
 
