@@ -9,6 +9,7 @@ import uuid
 import random
 import string
 import requests
+import threading
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -336,6 +337,15 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
+
+    def update_status_slot(slot):
+        slots = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
+        s = slots.json()
+        slot_db = Slot.query.filter_by(lid=lid).all()
+        for no, slot in enumerate(slot_db):
+            slot.status = s
+        db.session.commit()
+
     # temp_his(lid)
     check_own = Owner.query.filter_by(lid=lid).all()
     authorized = False
@@ -357,17 +367,11 @@ def rud_locker_api(lid):
                 if slot_info.opened:
                     flash("Something went wrong, try again")
                 else:
-                    # slot_info.opened = True
-                    # db.session.commit()
-
-                    slots = requests.get('http://127.0.0.1:5000/keptlock/unlock/'+slot)
-                    s = slots.json()
-                    print(slots)
-                    print(s)
-                    slot_db = Slot.query.filter_by(lid=lid).all()
-                    for no, slot in enumerate(slot_db):
-                        slot.status = s
+                    slot_info.opened = True
                     db.session.commit()
+
+                    x = threading.Thread(target=update_status_slot(), args=(slot,))
+                    x.start()
 
                 # except:
                 #     flash("Something went wrong, try again")
