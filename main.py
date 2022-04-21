@@ -359,7 +359,9 @@ def rud_locker_api(lid):
                     else:
                         slot_info.opened = True
                         db.session.commit()
+
                         requests.post('http://127.0.0.1:5000/keptlock/unlock'+slot)
+
                 except:
                     flash("Something went wrong, try again")
 
