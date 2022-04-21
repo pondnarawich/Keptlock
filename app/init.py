@@ -11,7 +11,7 @@ with open(path, "r") as f:
 
 @app.route('/on')
 def on():
-    response = requests.get('http://127.0.0.1:5000/on')
+    response = requests.get('http://127.0.0.1:8000/on')
     r = response.json()
     print(r)
     print('on')
@@ -19,21 +19,21 @@ def on():
 
 @app.route('/off')
 def off():
-    response = requests.get('http://127.0.0.1:5000/off')
+    response = requests.get('http://127.0.0.1:8000/off')
     r = response.json()
     print(r)
     return r
 
 @app.route('/start')
 def start():
-    response = requests.get('http://127.0.0.1:5000/start')
+    response = requests.get('http://127.0.0.1:8000/start')
     r = response.json()
     print(r)
     return r
 
 @app.route('/stop')
 def stop():
-    response = requests.get('http://127.0.0.1:5000/stop')
+    response = requests.get('http://127.0.0.1:8000/stop')
     r = response.json()
     print(r)
     return r

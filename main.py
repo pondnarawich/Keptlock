@@ -8,6 +8,7 @@ from werkzeug.security import (generate_password_hash, check_password_hash)
 import uuid
 import random
 import string
+import requests
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -358,7 +359,7 @@ def rud_locker_api(lid):
                     else:
                         slot_info.opened = True
                         db.session.commit()
-                #         sent to pi
+                        requests.post('http://127.0.0.1:5000/keptlock/unlock'+slot)
                 except:
                     flash("Something went wrong, try again")
 
@@ -652,4 +653,5 @@ if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     app.debug = True
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='127.0.0.1', port=8000)
+
