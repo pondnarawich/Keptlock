@@ -507,7 +507,7 @@ def rud_pin_api(pid):
 def unlock_pin_api(lid):
     pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
 
-    if pin:
+    if not pin:
         for p in pin:
             if p.date_end < datetime.now():
                 p.status = 'expired'
