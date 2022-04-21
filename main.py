@@ -17,7 +17,7 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///locker_db.db'
 db = SQLAlchemy(app)
 cur_pin = set()
 
@@ -152,7 +152,7 @@ def create_locker(size=3):
     new_locker = Locker(id=locker_id, serial=serial, size=size, row=size, col=1)
     db.session.add(new_locker)
     for i in range(size):
-        slot = Slot(id=str(uuid.uuid4()), lid=locker_id, slot_no=i)
+        slot = Slot(id=str(uuid.uuid4()), lid=locker_id, slot_no=i+1)
         db.session.add(slot)
     db.session.commit()
     return Locker
@@ -357,10 +357,15 @@ def rud_locker_api(lid):
                     if slot_info.opened:
                         flash("Something went wrong, try again")
                     else:
-                        slot_info.opened = True
-                        db.session.commit()
+                        # slot_info.opened = True
+                        # db.session.commit()
 
-                        requests.post('http://127.0.0.1:5000/keptlock/unlock'+slot)
+                        slots = requests.post('http://127.0.0.1:5000/keptlock/unlock'+slot)
+
+                        slot_db = Slot.query.filter_by(lid=lid).all()
+                        for no, slot in enumerate(slot_db):
+                            slot.status = slots[no]
+                        db.session.commit()
 
                 except:
                     flash("Something went wrong, try again")

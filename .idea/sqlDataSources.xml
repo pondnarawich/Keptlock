@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="06bdfa9b-6eb3-4303-bc94-1556c0dde476" />
+          <option name="name" value="locker_db" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/locker_db.db" />
+            </array>
+          </option>
+        </State>
+      </list>
+    </option>
+  </component>
+</project>
