@@ -162,6 +162,8 @@ def create_locker(size=3):
 
 
 # create_locker()
+# db.session.query(Video).delete()
+# db.session.query(History).delete()
 
 
 @login_manager.user_loader
