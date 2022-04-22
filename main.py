@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash, session, url_for
+from flask import Flask, request, render_template, redirect, flash, session, url_for, jsonify
 from flask_login import login_user, login_required, current_user, logout_user, LoginManager
 import os
 # from babel.dates import format_datetime
@@ -554,7 +554,8 @@ def unlock_pin_api(lid):
     if not pin:
         return "Pin is invalid or expired", 400
     # renew_code(pin.code)
-    return pin.slot, 200
+    data = {"slot": int(pin.slot)}
+    return jsonify(data), 200
 
 
 @app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
