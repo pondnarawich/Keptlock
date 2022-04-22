@@ -346,9 +346,9 @@ def rud_locker_api(lid):
     db.session.commit()
 
     def update_status_slot(slot):
-        res = requests.get('http://0.0.0.0:5000/keptlock/unlock/' + slot)
+        res = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
         print(res.json())
-        vi_res = requests.get('http://0.0.0.0:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
+        vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
         open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
 
         # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.webm')
@@ -537,9 +537,10 @@ def rud_pin_api(pid):
     return redirect("http://0.0.0.0:8000/keptlock/locker/" + lid + "#")
 
 
-@app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
+@app.route('/keptlock/locker/unlock/validate/pin/<lid>')
 def unlock_pin_api(lid):
-    pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
+    print("hi")
+    pin = Pin.query.filter_by(lid=lid, status='unused').all()
 
     if not pin:
         for p in pin:
@@ -548,23 +549,45 @@ def unlock_pin_api(lid):
                 # renew_code(p.code)
 
     print(lid)
-    code = request.json['code']
+    code = request.form['code']
+    print(code)
     pin = Pin.query.filter_by(lid=lid, code=str(code), status="unused").first()
 
     if not pin:
         return "Pin is invalid or expired", 400
     # renew_code(pin.code)
+    # pin_update = Pin.query.filter_by(lid=lid, code=str(code), status="unused").first()
+    # pin_update.status = "used"
+    # db.session.commit()
     data = {"slot": int(pin.slot)}
     return jsonify(data), 200
 
 
-@app.route('/keptlock/locker/unlock/<lid>', methods=['POST'])
+@app.route('/keptlock/locker/update/<lid>', methods=['POST'])
 def slot_update_api(lid):
-    slots = request.json['slots']
+    print(request.form)
+    status = request.form['opened']
+    slot_no = request.form['slot']
+    vi_name = request.form['vi_name']
+    vi_path = request.form['vi_path']
+    print(status)
+    print(slot_no)
+    if str(status) == "True":
+        opened = True
+    else:
+        opened = False
+    vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
+    open('static/vid/'+str(vi_name)+'.avi', 'wb').write(vi_res.content)
+
     try:
-        slot_db = Slot.query.filter_by(lid=lid).all()
-        for no, slot in enumerate(slot_db):
-            slot.status = slots[no]
+        vid_id = str(uuid.uuid4())
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name+'.avi', vid2=vi_name+'.avi')
+
+        db.session.add(new_vid)
+        new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot_no, vid_id=vid_id)
+        db.session.add(new_his)
+        slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
+        slot_db.opened = opened
         db.session.commit()
     except:
         return "something went wrong", 400
@@ -574,30 +597,29 @@ def slot_update_api(lid):
 
 
 # TODO need testing
-@app.route('/keptlock/locker/video')
-def add_video_api():
-    print('hello video')
-    if 'vid1' not in request.files:
-        return "something went wrong", 400
+@app.route('/keptlock/locker/video/<lid>', methods=['POST'])
+def add_video_api(lid):
 
-    vid1 = request.files["vid1"]
-    vid2 = request.files["vid2"]
-    if vid1 and vid2:
-        vid1.save(os.path.join(app.config['UPLOAD_FOLDER'], vid1.filename))
-        vid2.save(os.path.join(app.config['UPLOAD_FOLDER'], vid2.filename))
+    vid1_name = str(request.form['vi_name'])
+    vid2_name = str(request.form['vi_name'])
+    vid1 = request.files['vid1']
+    vid2 = request.files['vid2']
+    slot = str(request.form['slot'])
+    lid = str(request.form['lid'])
 
-        lid_pi = request.json['lid']
-        slot = request.json['slot']
+    try:
+        open('static/vid/'+vid1_name+'.avi', 'wb').write(vid1)
+
         vid_id = str(uuid.uuid4())
-        try:
-            new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=vid1.filename, vid2=vid2.filename)
-            db.session.add(new_vid)
-            new_his = History(id=str(uuid.uuid4()), lid=lid_pi, date_time=datetime.now(), slot=slot, vid_id=vid_id)
-            db.session.add(new_his)
-            db.session.commit()
-            return "ok", 200
-        except:
-            return "something went wrong", 400
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=vid1_name+'.avi', vid2=vid2_name+'.avi')
+
+        db.session.add(new_vid)
+        new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot, vid_id=vid_id)
+        db.session.add(new_his)
+        db.session.commit()
+        return "ok", 200
+    except:
+        return "something went wrong", 400
 
 
 @app.route('/keptlock/locker/video/<vid>', methods=['PUT', 'GET', 'DELETE'])
@@ -689,5 +711,5 @@ if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='127.0.0.1', port=8000)
 
