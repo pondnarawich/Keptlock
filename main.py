@@ -10,6 +10,7 @@ import random
 import string
 import requests
 import threading
+import time
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -171,21 +172,21 @@ def load_user(user_id):
 @app.route("/")
 def index():
     if current_user.is_authenticated:
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
     return render_template('index.html')
 
 
 @app.route('/keptlock/user/register')
 def register_page():
     if current_user.is_authenticated:
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
     return render_template('signup.html')
 
 
 @app.route('/keptlock/user/register', methods=['POST'])
 def register_api():
     if current_user.is_authenticated:
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
 
     fname = request.form['fname_reg']
     lname = request.form['lname_reg']
@@ -215,33 +216,33 @@ def register_api():
         try:
             db.session.add(new_user)
             db.session.commit()
-            return redirect("http://127.0.0.1:8000/keptlock/user/login")
+            return redirect("http://0.0.0.0:8000/keptlock/user/login")
         except:
             flash("Something went wrong, please try again")
-            return redirect('http://127.0.0.1:8000/keptlock/user/register')
+            return redirect('http://0.0.0.0:8000/keptlock/user/register')
 
     elif uname_unique and email_unique and not mobile_unique:
         flash("This mobile number has been used, try again")
-        return redirect('http://127.0.0.1:8000/keptlock/user/register')
+        return redirect('http://0.0.0.0:8000/keptlock/user/register')
     elif uname_unique and not email_unique and mobile_unique:
         flash("This email has been used, try again")
-        return redirect('http://127.0.0.1:8000/keptlock/user/register')
+        return redirect('http://0.0.0.0:8000/keptlock/user/register')
     elif not uname_unique and email_unique and mobile_unique:
         flash("This username has been used, try again")
-        return redirect('http://127.0.0.1:8000/keptlock/user/register')
+        return redirect('http://0.0.0.0:8000/keptlock/user/register')
 
 
 @app.route('/keptlock/user/login')
 def login_page():
     if current_user.is_authenticated:
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
     return render_template('login.html')
 
 
 @app.route('/keptlock/user/login', methods=['POST'])
 def login_api():
     if current_user.is_authenticated:
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
 
     username = request.form['username']
     password = request.form['password']
@@ -257,20 +258,20 @@ def login_api():
 
     if not user:
         flash('This username is not registered')
-        return redirect('http://127.0.0.1:8000/keptlock/user/login')
+        return redirect('http://0.0.0.0:8000/keptlock/user/login')
     elif user and not checked_pass:
         flash('Password is incorrect, Try again')
-        return redirect('http://127.0.0.1:8000/keptlock/user/login')
+        return redirect('http://0.0.0.0:8000/keptlock/user/login')
     else:
         login_user(check, remember=True)
-        return redirect('http://127.0.0.1:8000/keptlock/locker')
+        return redirect('http://0.0.0.0:8000/keptlock/locker')
 
 
 @app.route('/keptlock/user/logout')
 @login_required
 def logout_api():
     logout_user()
-    return redirect('http://127.0.0.1:8000')
+    return redirect('http://0.0.0.0:8000')
 
 
 @app.route('/keptlock/user/<uid>', methods=['PUT', 'GET', 'DELETE'])
@@ -318,13 +319,13 @@ def add_locker_api():
             db.session.commit()
         except:
             flash("Something went wrong, please try again")
-            return redirect("http://127.0.0.1:8000/keptlock/locker#")
+            return redirect("http://0.0.0.0:8000/keptlock/locker#")
 
     if not serial_exist:
         flash("The serial does not exist, please contact admin for further help")
     else:
         flash("New device added!")
-    return redirect("http://127.0.0.1:8000/keptlock/locker#")
+    return redirect("http://0.0.0.0:8000/keptlock/locker#")
 
 
 # TODO need testing
@@ -337,13 +338,24 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
+    slot_info = Slot.query.filter_by(lid=lid, slot_no=1).first()
+    slot_info.opened = False
+    db.session.commit()
 
     def update_status_slot(slot):
-        slots = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
-        s = slots.json()
-        slot_db = Slot.query.filter_by(lid=lid).all()
-        for no, slot in enumerate(slot_db):
-            slot.status = s
+        res = requests.get('http://0.0.0.0:5000/keptlock/unlock/' + slot)
+        print(res.json())
+        vi_res = requests.get('http://0.0.0.0:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
+        open('static/vid/video'+str(time.time())+'.avi', 'wb').write(vi_res.content)
+        if str(res.json()['opened']) == "True":
+            opened = True
+        else:
+            opened = False
+        print(opened)
+        print(str(res.json()['lid']))
+        print(int(res.json()['slot']))
+        slot_db = Slot.query.filter_by(lid=str(res.json()['lid']), slot_no=int(res.json()['slot'])).first()
+        slot_db.opened = opened
         db.session.commit()
 
     # temp_his(lid)
@@ -355,7 +367,7 @@ def rud_locker_api(lid):
 
     if not authorized:
         flash("You trying to access other's locker!")
-        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+        return redirect("http://0.0.0.0:8000/keptlock/locker#")
 
     if request.method == 'POST':
         session['uid'] = current_user.id
@@ -370,7 +382,7 @@ def rud_locker_api(lid):
                     slot_info.opened = True
                     db.session.commit()
 
-                    x = threading.Thread(target=update_status_slot(), args=(slot,))
+                    x = threading.Thread(target=update_status_slot, args=(slot,))
                     x.start()
 
                 # except:
@@ -378,11 +390,11 @@ def rud_locker_api(lid):
 
                 # TODO do something with the locker
                 print("turn on slot no.", slot)
-                return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
+                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#")
             if key.startswith('del_pin.'):
                 pin = key.partition('.')[-1]
                 session['lid'] = lid
-                return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/"+pin)
+                return redirect("http://0.0.0.0:8000/keptlock/locker/unlock/"+pin)
             if key.startswith('change.'):
                 name = request.form['name']
                 locker_info = Locker.query.filter_by(id=lid).first()
@@ -391,7 +403,7 @@ def rud_locker_api(lid):
                     db.session.commit()
                 except:
                     flash("Something went wrong, please try again")
-                return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
+                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#")
 
     if request.method == 'PUT':
         print('put', lid)
@@ -446,17 +458,17 @@ def generate_pin_api(lid):
         end = request.form['end_time']
         if start == "" or end == "":
             flash("Please select the valid time")
-            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/"+lid)
+            return redirect("http://0.0.0.0:8000/keptlock/locker/unlock/pin/"+lid)
 
         start = datetime.strptime(start, '%Y-%m-%dT%H:%M')
         end = datetime.strptime(end, '%Y-%m-%dT%H:%M')
 
         if start <= datetime.now():
             flash("The time interval must be in the future")
-            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
+            return redirect("http://0.0.0.0:8000/keptlock/locker/unlock/pin/" + lid)
         elif start > end:
             flash("End time must be later than the start time")
-            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
+            return redirect("http://0.0.0.0:8000/keptlock/locker/unlock/pin/" + lid)
 
         new_pin = Pin(id=str(uuid.uuid4()), code=code, uid=current_user.id, slot=slot, lid=lid, date_start=start, date_end=end)
         try:
@@ -470,7 +482,7 @@ def generate_pin_api(lid):
 
         if countdown == "":
             flash("Please select the valid time")
-            return redirect("http://127.0.0.1:8000/keptlock/locker/unlock/pin/" + lid)
+            return redirect("http://0.0.0.0:8000/keptlock/locker/unlock/pin/" + lid)
 
         current_time = datetime.now()
         expired_date = current_time + timedelta(minutes=int(countdown))
@@ -482,7 +494,7 @@ def generate_pin_api(lid):
         except:
             flash("Something went wrong, please try again")
 
-    return redirect("http://127.0.0.1:8000/keptlock/locker/"+lid+"#")
+    return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#")
 
 
 @app.route('/keptlock/locker/unlock/<pid>', methods=['PUT', 'GET', 'DELETE'])
@@ -497,7 +509,7 @@ def rud_pin_api(pid):
 
     if not authorized:
         flash("You trying to access other's locker!")
-        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+        return redirect("http://0.0.0.0:8000/keptlock/locker#")
 
     if request.method == 'PUT':
         print('put', pid)
@@ -513,7 +525,7 @@ def rud_pin_api(pid):
 
     elif request.method == 'DELETE':
         print('delete', pid)
-    return redirect("http://127.0.0.1:8000/keptlock/locker/" + lid + "#")
+    return redirect("http://0.0.0.0:8000/keptlock/locker/" + lid + "#")
 
 
 @app.route('/keptlock/locker/unlock/pin/<lid>', methods=['POST'])
@@ -552,8 +564,9 @@ def slot_update_api(lid):
 
 
 # TODO need testing
-@app.route('/keptlock/locker/video', methods=['POST'])
+@app.route('/keptlock/locker/video')
 def add_video_api():
+    print('hello video')
     if 'vid1' not in request.files:
         return "something went wrong", 400
 
@@ -589,7 +602,7 @@ def rud_video_api(vid):
 
     if not authorized:
         flash("You trying to access other's locker!")
-        return redirect("http://127.0.0.1:8000/keptlock/locker#")
+        return redirect("http://0.0.0.0:8000/keptlock/locker#")
 
     if request.method == 'PUT':
         print('put', vid)
@@ -643,7 +656,7 @@ def not_found(e):
 
 @app.errorhandler(401)
 def unauthorized(e):
-    return redirect('http://127.0.0.1:8000/keptlock/user/login')
+    return redirect('http://0.0.0.0:8000/keptlock/user/login')
 
 
 # @app.template_filter()
@@ -666,5 +679,5 @@ if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     app.debug = True
-    app.run(host='127.0.0.1', port=8000)
+    app.run(host='0.0.0.0', port=8000)
 

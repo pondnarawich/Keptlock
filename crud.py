@@ -115,21 +115,21 @@ def delete(id, table):
     # c_username = User.query.filter(User.username == username).first()
     # if c_username:
     #     flash("This username has been used, try again")
-    #     return redirect('http://127.0.0.1:8000/keptlock/user/register')
+    #     return redirect('http://0.0.0.0:8000/keptlock/user/register')
 
     # if User.query.filter(User.email == email).first():
     #     flash("This email has been used, try again")
-    #     return redirect('http://127.0.0.1:8000/keptlock/user/register')
+    #     return redirect('http://0.0.0.0:8000/keptlock/user/register')
 
     # if User.query.filter(User.mobile == mobile).first():
     #     flash("This mobile number has been used, try again")
-    #     return redirect('http://127.0.0.1:8000/keptlock/user/register')
+    #     return redirect('http://0.0.0.0:8000/keptlock/user/register')
 
     # try:
     #     User.is_authenticated = True
     #     db.session.add(user)
     #     db.session.commit()
     #     print("successfully added user")
-    #     return redirect("http://127.0.0.1:8000/keptlock/user/login")
+    #     return redirect("http://0.0.0.0:8000/keptlock/user/login")
     # except AssertionError as exception_message:
     #     return render_template('error.html'), 400

@@ -12,8 +12,8 @@
     <script src="https://kit.fontawesome.com/802ccae5cc.js" crossorigin="anonymous"></script>
 
     <!-- custom css file link  -->
-    <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" type="text/css"  href="/static/css/style.css">
+
 </head>
 
   
@@ -21,11 +21,11 @@
   <body id="navy">
     <header class="header">
   
-      <a href="http://0.0.0.0:8000" class="logo"> Kept-lock </a>
+      <a href="http://127.0.0.1:5000" class="logo"> Kept-lock </a>
                 
       <div class="icons">          
         <div>
-            <a href="http://0.0.0.0:8000/keptlock/user/login"><div class="fas fa-circle-user" ></div></a>
+            <a href="http://127.0.0.1:5000/keptlock/user/login"><div class="fas fa-circle-user" ></div></a>
         </div>
       </div>   
     
@@ -56,19 +56,15 @@
     
         <div class="row">
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages[0] == 'You trying to access the service while not logging in'%}
+            
+            
+            
                 <div class="exists">
-                    <h3> {{ messages[0] }}. Go to <a href="{{ 'http://0.0.0.0:8000' }}"> LOGIN page</a>.</h3>
+                    <h3> Page not found.</h3>
                 </div>
-            {% else %}
-            {% if messages[0]%}
-                <div class="exists">
-                    <h3> {{ messages[0] }}.</h3>
-                </div>
-            {% endif %}
-            {% endif %}
-            {% endwith %}
+            
+            
+            
         </div>
       </div>
     
@@ -80,4 +76,3 @@
   </body>
 
 </html>
-

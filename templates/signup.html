@@ -21,11 +21,11 @@
   <body id="navy">
     <header class="header">
   
-      <a href="http://127.0.0.1:8000" class="logo"> Kept-lock </a>
+      <a href="http://0.0.0.0:8000" class="logo"> Kept-lock </a>
                 
       <div class="icons">          
         <div>
-            <a href="http://127.0.0.1:8000/keptlock/user/login"><div class="fas fa-circle-user" ></div></a>
+            <a href="http://0.0.0.0:8000/keptlock/user/login"><div class="fas fa-circle-user" ></div></a>
         </div>
       </div>   
     
@@ -58,7 +58,7 @@
             {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="exists">
-                    <h3> {{ messages[0] }}. or Go to <a href="{{ 'http://127.0.0.1:8000/keptlock/user/login' }}">login page</a>.</h3>
+                    <h3> {{ messages[0] }}. or Go to <a href="{{ 'http://0.0.0.0:8000/keptlock/user/login' }}">login page</a>.</h3>
                 </div>
             {% endif %}
             {% endwith %}
@@ -95,7 +95,7 @@
 
               <h2><span>OR</span></h2>
 
-              <a href="http://127.0.0.1:8000/keptlock/user/login" ><h4>Already a user? LOGIN</h4></a>
+              <a href="http://0.0.0.0:8000/keptlock/user/login" ><h4>Already a user? LOGIN</h4></a>
     
             </form>
         </div>

@@ -22,12 +22,12 @@
   <body id="navy">
     <header class="header">
   
-      <a href="http://127.0.0.1:8000/keptlock/locker" class="logo"> Kept-lock </a>
+      <a href="http://0.0.0.0:8000/keptlock/locker" class="logo"> Kept-lock </a>
                 
       <div class="icons">  
         <div>
           <p  class="logo"> {{username}} </p>
-              <a href="http://127.0.0.1:8000/keptlock/user/logout" method="post"><div class="fas fa-right-from-bracket" ></div></a>
+              <a href="http://0.0.0.0:8000/keptlock/user/logout" method="post"><div class="fas fa-right-from-bracket" ></div></a>
         </div>
       </div>   
     
@@ -96,7 +96,7 @@
             <div class="box">
                 <img src="https://isssource.com/wp-content/uploads/2020/08/081020smart-lock.png" alt="">
                 <h3>{{locker.name}}</h3>
-                <a href="http://127.0.0.1:8000/keptlock/locker/{{locker.id}}" class="btn">See more</a>
+                <a href="http://0.0.0.0:8000/keptlock/locker/{{locker.id}}" class="btn">See more</a>
             </div>
         {% endfor %}
         {% endif %}
@@ -116,7 +116,7 @@
                   <a href="#"class="btn_can">Cancel</a>
               </div>
           </form>
-<!--          <a href="http://127.0.0.1:8000/keptlock/locker" class="btn_con">Confirm</a>-->
+<!--          <a href="http://0.0.0.0:8000/keptlock/locker" class="btn_con">Confirm</a>-->
 
       </div>
     </div>

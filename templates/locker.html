@@ -21,12 +21,12 @@
   <body id="navy">
     <header class="header">
   
-      <a href="http://127.0.0.1:8000/keptlock/locker" class="logo"> Kept-lock </a>
+      <a href="http://0.0.0.0:8000/keptlock/locker" class="logo"> Kept-lock </a>
                 
        <div class="icons">
         <div>
           <p  class="logo"> {{username}} </p>
-              <a href="http://127.0.0.1:8000/keptlock/user/logout" ><div class="fas fa-right-from-bracket" ></div></a>
+              <a href="http://0.0.0.0:8000/keptlock/user/logout" ><div class="fas fa-right-from-bracket" ></div></a>
         </div>
       </div>
     
@@ -92,7 +92,7 @@
 
         
         <div class="pin">
-            <a onclick="location.href='http://127.0.0.1:8000/keptlock/locker/unlock/pin/{{lid}}';"><div class="box" >
+            <a onclick="location.href='http://0.0.0.0:8000/keptlock/locker/unlock/pin/{{lid}}';"><div class="box" >
               <div class="content"><h1>Generate Pin</h1></div>
               <div class="icons">  
                   <div class="fas fa-lock"></div>
@@ -139,7 +139,7 @@
               <h1>{{ his.date_time.strftime('%d-%m-%Y')}}</h1>
               <h1>{{ his.date_time.strftime('%H:%M')}}</h1>
               <h1>{{ his.slot}}</h1>
-               <a onclick="location.href='http://127.0.0.1:8000//keptlock/locker/video/{{his.vid_id}}';">
+               <a onclick="location.href='http://0.0.0.0:8000//keptlock/locker/video/{{his.vid_id}}';">
                    <h3>Watch the video record</h3>
                    <div class="icons" ><div class="fas fa-circle-play"></div></div>
               </a>
