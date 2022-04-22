@@ -3,6 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user, L
 import os
 # from babel.dates import format_datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from datetime import datetime, timedelta
 from werkzeug.security import (generate_password_hash, check_password_hash)
 import uuid
@@ -346,16 +347,22 @@ def rud_locker_api(lid):
         res = requests.get('http://0.0.0.0:5000/keptlock/unlock/' + slot)
         print(res.json())
         vi_res = requests.get('http://0.0.0.0:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
-        open('static/vid/video'+str(time.time())+'.avi', 'wb').write(vi_res.content)
+        open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
+
+        # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.webm')
         if str(res.json()['opened']) == "True":
             opened = True
         else:
             opened = False
-        print(opened)
-        print(str(res.json()['lid']))
-        print(int(res.json()['slot']))
         slot_db = Slot.query.filter_by(lid=str(res.json()['lid']), slot_no=int(res.json()['slot'])).first()
         slot_db.opened = opened
+        vid_id = str(uuid.uuid4())
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=str(res.json()['vi_name'])+'.avi', vid2=str(res.json()['vi_name'])+'.avi')
+        # new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1="pond2.mp4", vid2="pune2.mp4")
+
+        db.session.add(new_vid)
+        new_his = History(id=str(uuid.uuid4()), lid=str(res.json()['lid']), date_time=datetime.now(), slot=int(res.json()['slot']), vid_id=vid_id)
+        db.session.add(new_his)
         db.session.commit()
 
     # temp_his(lid)
@@ -412,7 +419,7 @@ def rud_locker_api(lid):
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
         # TODO ask pond if want to show only for the action of that user or all user on a single locker
-        history = History.query.filter_by(lid=lid).all()
+        history = History.query.filter_by(lid=lid).order_by(desc(History.date_time)).all()
 
         if not pin:
             pin = None
