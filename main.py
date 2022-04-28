@@ -575,6 +575,22 @@ def slot_update_api(lid):
         clip = moviepy.VideoFileClip('static/vid/' + vi_name + '.avi')
         clip.write_videofile('static/vid/' + vi_name + '.mp4')
 
+        try:
+            vid_id = str(uuid.uuid4())
+            new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name + '.mp4',
+                            vid2=vi_name + '.mp4')
+
+            db.session.add(new_vid)
+            new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot_no, vid_id=vid_id)
+            db.session.add(new_his)
+            slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
+            slot_db.opened = opened
+
+            db.session.commit()
+        except:
+            flash("Something went wrong")
+
+
     print(request.form)
     status = request.form['opened']
     slot_no = request.form['slot']
@@ -590,19 +606,6 @@ def slot_update_api(lid):
     x = threading.Thread(target=save_vid, args=(vi_res, vi_name,))
     x.start()
 
-    try:
-        vid_id = str(uuid.uuid4())
-        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name+'.mp4', vid2=vi_name+'.mp4')
-
-        db.session.add(new_vid)
-        new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot_no, vid_id=vid_id)
-        db.session.add(new_his)
-        slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
-        slot_db.opened = opened
-
-        db.session.commit()
-    except:
-        return "something went wrong", 400
     return "ok", 200
 
 # video
