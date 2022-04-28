@@ -63,7 +63,9 @@
           <h1>Date : {{ vid.date_time.strftime('%d-%m-%Y')}}</h1>
           <h1>Time : {{ vid.date_time.strftime('%H:%M')}}</h1>
           <h1>Slot #{{ vid.slot}}</h1>
+          <h1>If the video does not play, the video might still be processing</h1>
         </div>
+
         <h1 class="heading">Upper camera</h1>
         <div class="video">
            <video width="720" height="390" controls="controls" preload="preload">
@@ -72,7 +74,7 @@
 <!--               <source src="movie.ogg" type="video/ogg"> -->
             Your browser does not support the video tag.
           </video>
-            <a href="{{ url_for('static', filename='vid/'+vid.vid1) }}" class="btn" download="upper">Download the video</a>
+            <a href="{{ url_for('static', filename='vid/'+vid.vid1) }}" class="btn">Download the video</a>
           
         </div>
       
@@ -85,7 +87,7 @@
 <!--               <source src="movie.ogg" type="video/ogg"> -->
             Your browser does not support the video tag.
           </video>
-            <a href="{{ url_for('static', filename='vid/'+vid.vid2) }}"  class="btn" download="lower">Download the video</a>
+            <a href="{{ url_for('static', filename='vid/'+vid.vid2) }}"  class="btn">Download the video</a>
           
         </div>
        

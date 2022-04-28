@@ -385,21 +385,20 @@ def rud_locker_api(lid):
         for key in request.form:
             if key.startswith('open.'):
                 slot = key.partition('.')[-1]
-                # try:
-                slot_info = Slot.query.filter_by(lid=lid, slot_no=slot).first()
-                if slot_info.opened:
+                try:
+                    slot_info = Slot.query.filter_by(lid=lid, slot_no=slot).first()
+                    if slot_info.opened:
+                        flash("Something went wrong, try again")
+                    else:
+                        slot_info.opened = True
+                        db.session.commit()
+
+                        x = threading.Thread(target=update_status_slot, args=(slot,))
+                        x.start()
+
+                except:
                     flash("Something went wrong, try again")
-                else:
-                    slot_info.opened = True
-                    db.session.commit()
 
-                    x = threading.Thread(target=update_status_slot, args=(slot,))
-                    x.start()
-
-                # except:
-                #     flash("Something went wrong, try again")
-
-                # TODO do something with the locker
                 print("turn on slot no.", slot)
                 return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#home")
             if key.startswith('del_pin.'):
@@ -570,6 +569,12 @@ def unlock_pin_api(lid):
 
 @app.route('/keptlock/locker/update/<lid>', methods=['POST'])
 def slot_update_api(lid):
+
+    def save_vid(vi_res, vi_name):
+        open('static/vid/' + str(vi_name) + '.avi', 'wb').write(vi_res.content)
+        clip = moviepy.VideoFileClip('static/vid/' + vi_name + '.avi')
+        clip.write_videofile('static/vid/' + vi_name + '.mp4')
+
     print(request.form)
     status = request.form['opened']
     slot_no = request.form['slot']
@@ -582,10 +587,9 @@ def slot_update_api(lid):
     else:
         opened = False
     vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
-    open('static/vid/'+str(vi_name)+'.avi', 'wb').write(vi_res.content)
-    clip = moviepy.VideoFileClip('static/vid/'+vi_name+'.avi')
-    clip.write_videofile('static/vid/'+vi_name+'.mp4')
-    print(vi_name)
+    x = threading.Thread(target=save_vid, args=(vi_res, vi_name,))
+    x.start()
+
     try:
         vid_id = str(uuid.uuid4())
         new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name+'.mp4', vid2=vi_name+'.mp4')
