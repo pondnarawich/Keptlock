@@ -65,7 +65,7 @@
             {% endif %}
             {% endwith %}
 
-    <div class="locker" >
+    <div class="locker" id="home">
         <h3 class="header_small">Serial : {{locker.serial}} <a class="icons" onclick="copy()">
           <div class="fas fa-copy"></div>
       </a></h3>
@@ -154,7 +154,7 @@
     </div>
 
 
-  {% for slot in range(locker.size) %}
+  {% for slot in range(locker.size+1) %}
      <div id="popup{{slot}}" class="overlay">
       <div class="popup">
         <h2>Confirmation</h2>

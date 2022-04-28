@@ -12,6 +12,7 @@ import string
 import requests
 import threading
 import time
+import moviepy.editor as moviepy
 
 template_dir = os.path.abspath('templates')
 static_dir = os.path.abspath('static')
@@ -350,8 +351,9 @@ def rud_locker_api(lid):
         print(res.json())
         vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
         open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
-
-        # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.webm')
+        clip = moviepy.VideoFileClip('static/vid/'+str(res.json()['vi_name'])+'.avi')
+        clip.write_videofile('static/vid/'+str(res.json()['vi_name'])+'.mp4')
+        # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.avi')
         if str(res.json()['opened']) == "True":
             opened = True
         else:
@@ -359,7 +361,7 @@ def rud_locker_api(lid):
         slot_db = Slot.query.filter_by(lid=str(res.json()['lid']), slot_no=int(res.json()['slot'])).first()
         slot_db.opened = opened
         vid_id = str(uuid.uuid4())
-        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=str(res.json()['vi_name'])+'.avi', vid2=str(res.json()['vi_name'])+'.avi')
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=str(res.json()['vi_name'])+'.mp4', vid2=str(res.json()['vi_name'])+'.mp4')
         # new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1="pond2.mp4", vid2="pune2.mp4")
 
         db.session.add(new_vid)
@@ -399,7 +401,7 @@ def rud_locker_api(lid):
 
                 # TODO do something with the locker
                 print("turn on slot no.", slot)
-                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#")
+                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#home")
             if key.startswith('del_pin.'):
                 pin = key.partition('.')[-1]
                 session['lid'] = lid
@@ -555,6 +557,9 @@ def unlock_pin_api(lid):
 
     if not pin:
         return "Pin is invalid or expired", 400
+
+    pin.status = "used"
+    db.session.commit()
     # renew_code(pin.code)
     # pin_update = Pin.query.filter_by(lid=lid, code=str(code), status="unused").first()
     # pin_update.status = "used"
@@ -578,16 +583,19 @@ def slot_update_api(lid):
         opened = False
     vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
     open('static/vid/'+str(vi_name)+'.avi', 'wb').write(vi_res.content)
-
+    clip = moviepy.VideoFileClip('static/vid/'+vi_name+'.avi')
+    clip.write_videofile('static/vid/'+vi_name+'.mp4')
+    print(vi_name)
     try:
         vid_id = str(uuid.uuid4())
-        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name+'.avi', vid2=vi_name+'.avi')
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name+'.mp4', vid2=vi_name+'.mp4')
 
         db.session.add(new_vid)
         new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot_no, vid_id=vid_id)
         db.session.add(new_his)
         slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
         slot_db.opened = opened
+
         db.session.commit()
     except:
         return "something went wrong", 400
