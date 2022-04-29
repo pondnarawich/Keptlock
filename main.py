@@ -570,7 +570,9 @@ def unlock_pin_api(lid):
 @app.route('/keptlock/locker/update/<lid>', methods=['POST'])
 def slot_update_api(lid):
 
-    def save_vid(vi_res, vi_name):
+    def save_vid(vi_name):
+        vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
+        print(vi_res)
         open('static/vid/' + str(vi_name) + '.avi', 'wb').write(vi_res.content)
         clip = moviepy.VideoFileClip('static/vid/' + vi_name + '.avi')
         clip.write_videofile('static/vid/' + vi_name + '.mp4')
@@ -602,9 +604,32 @@ def slot_update_api(lid):
         opened = True
     else:
         opened = False
-    vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
-    x = threading.Thread(target=save_vid, args=(vi_res, vi_name,))
+    
+    x = threading.Thread(target=save_vid, args=(vi_name,))
     x.start()
+
+    # vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
+    # print(vi_res)
+    # open('static/vid/' + str(vi_name) + '.avi', 'wb').write(vi_res.content)
+    # clip = moviepy.VideoFileClip('static/vid/' + vi_name + '.avi')
+    # clip.write_videofile('static/vid/' + vi_name + '.mp4')
+
+    # try:
+    #     vid_id = str(uuid.uuid4())
+    #     new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot_no, vid1=vi_name + '.mp4',
+    #                     vid2=vi_name + '.mp4')
+
+    #     db.session.add(new_vid)
+    #     new_his = History(id=str(uuid.uuid4()), lid=lid, date_time=datetime.now(), slot=slot_no, vid_id=vid_id)
+    #     db.session.add(new_his)
+    #     slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
+    #     slot_db.opened = opened
+
+    #     db.session.commit()
+    # except:
+    #     # flash("Something went wrong")
+    #     return "wrong", 400
+
 
     return "ok", 200
 
