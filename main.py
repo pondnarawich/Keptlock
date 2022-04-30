@@ -333,13 +333,13 @@ def add_locker_api():
             db.session.commit()
         except:
             flash("Something went wrong, please try again")
-            return redirect("http://0.0.0.0:8000/keptlock/locker#")
+            return redirect("http://0.0.0.0:8000/keptlock/locker#home")
 
     if not serial_exist:
         flash("The serial does not exist, please contact admin for further help")
     else:
         flash("New device added!")
-    return redirect("http://0.0.0.0:8000/keptlock/locker#")
+    return redirect("http://0.0.0.0:8000/keptlock/locker#home")
 
 
 # TODO need testing
@@ -434,7 +434,7 @@ def rud_locker_api(lid):
     if request.method == 'PUT':
         print('put', lid)
     elif request.method == 'GET':
-        rain = Rain.query.filter_by(id=lid).first()
+        rain = Rain.query.filter_by(lid=lid).first()
         locker = Locker.query.filter_by(id=lid).first()
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
