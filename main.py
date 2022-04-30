@@ -27,6 +27,7 @@ cur_pin = set()
 
 UPLOAD_FOLDER = '/static/vid'
 
+
 # CREATE CLASS FOR DATABASE
 class User(db.Model):
     id = db.Column(db.String(50), primary_key=True)
@@ -117,6 +118,15 @@ class Video(db.Model):
         return '<Video %r>' % self.id
 
 
+class Rain(db.Model):
+    id = db.Column(db.String(50), primary_key=True)
+    lid = db.Column(db.String(30), nullable=False)
+    raining = db.Column(db.Boolean, nullable=False, default=False)
+
+    def __repr__(self):
+        return '<Rain %r>' % self.id
+
+
 def set_password(password):
     return generate_password_hash(password)
 
@@ -158,13 +168,13 @@ def create_locker(size=3):
     for i in range(size):
         slot = Slot(id=str(uuid.uuid4()), lid=locker_id, slot_no=i+1)
         db.session.add(slot)
+    new_rain = Rain(id=str(uuid.uuid4()), lid=locker_id, raining= False)
+    db.session.add(new_rain)
     db.session.commit()
     return Locker
 
 
 # create_locker()
-# db.session.query(Video).delete()
-# db.session.query(History).delete()
 
 
 @login_manager.user_loader
@@ -424,6 +434,7 @@ def rud_locker_api(lid):
     if request.method == 'PUT':
         print('put', lid)
     elif request.method == 'GET':
+        rain = Rain.query.filter_by(id=lid).first()
         locker = Locker.query.filter_by(id=lid).first()
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
@@ -434,6 +445,8 @@ def rud_locker_api(lid):
             pin = None
         if not history:
             history = None
+        if not rain:
+            rain = None
 
         if pin is not None:
             for p in pin:
@@ -450,7 +463,7 @@ def rud_locker_api(lid):
                 flash("Something went wrong, please try again")
 
         session["lid"] = lid
-        return render_template("locker.html", pins=pin, histories=history, locker=locker, slots=slots, username=current_user.username, lid=lid)
+        return render_template("locker.html", pins=pin, histories=history, locker=locker, slots=slots, username=current_user.username, lid=lid, rain=rain.raining)
 
     elif request.method == 'DELETE':
         print('delete', lid)
@@ -576,6 +589,7 @@ def unlock_pin_api(lid):
 @app.route('/keptlock/locker/update/<lid>', methods=['POST'])
 def slot_update_api(lid):
     print(request.form)
+
     def save_vid(vi_name):
         vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(vi_path)})
         print(vi_res)

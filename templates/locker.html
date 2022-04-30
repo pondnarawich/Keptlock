@@ -58,12 +58,18 @@
 
    <section class="device">
       {% with messages = get_flashed_messages() %}
-            {% if messages%}
-                <div class="exists">
-                    <h3> {{ messages[0] }}.</h3>
-                </div>
-            {% endif %}
-            {% endwith %}
+        {% if messages%}
+            <div class="exists">
+                <h3> {{ messages[0] }}.</h3>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if rain %}
+        <div class="complete">
+            <h3> The humidity is very high, there is possibility that it is raining.</h3>
+        </div>
+    {% endif %}
 
     <div class="locker" id="home">
         <h3 class="header_small">Serial : {{locker.serial}} <a class="icons" onclick="copy()">
@@ -158,6 +164,13 @@
      <div id="popup{{slot}}" class="overlay">
       <div class="popup">
         <h2>Confirmation</h2>
+
+         {% if rain %}
+            <div class="content">
+                The humidity is very high, there is possibility that it is raining.
+            </div>
+        {% endif %}
+
         <div class="content">
           Are you sure, you want to unlock slot #{{slot}} ?
         </div>
