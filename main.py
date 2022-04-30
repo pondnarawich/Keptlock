@@ -342,26 +342,32 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
-    slot_info = Slot.query.filter_by(lid=lid, slot_no=1).first()
-    slot_info.opened = False
-    db.session.commit()
+    # slot_info = Slot.query.filter_by(lid=lid, slot_no=3).first()
+    # slot_info.opened = False
+    # db.session.commit()
 
     def update_status_slot(slot):
         res = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
         print(res.json())
-        vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
-        open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
-        clip = moviepy.VideoFileClip('static/vid/'+str(res.json()['vi_name'])+'.avi')
-        clip.write_videofile('static/vid/'+str(res.json()['vi_name'])+'.mp4')
-        # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.avi')
         if str(res.json()['opened']) == "True":
             opened = True
         else:
             opened = False
         slot_db = Slot.query.filter_by(lid=str(res.json()['lid']), slot_no=int(res.json()['slot'])).first()
         slot_db.opened = opened
+        vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
+        open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
+        clip = moviepy.VideoFileClip('static/vid/'+str(res.json()['vi_name'])+'.avi')
+        clip.write_videofile('static/vid/'+str(res.json()['vi_name'])+'.mp4')
+
+        vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path_main'])})
+        open('static/vid/'+str(res.json()['vi_name_main'])+'.avi', 'wb').write(vi_res.content)
+        clip_main = moviepy.VideoFileClip('static/vid/'+str(res.json()['vi_name_main'])+'.avi')
+        clip_main.write_videofile('static/vid/'+str(res.json()['vi_name_main'])+'.mp4')
+        # os.rename('static/vid/'+str(res.json()['vi_name'])+'.avi', 'static/vid/'+str(res.json()['vi_name'])+'.avi')
+        
         vid_id = str(uuid.uuid4())
-        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=str(res.json()['vi_name'])+'.mp4', vid2=str(res.json()['vi_name'])+'.mp4')
+        new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1=str(res.json()['vi_name_main'])+'.mp4', vid2=str(res.json()['vi_name'])+'.mp4')
         # new_vid = Video(id=vid_id, date_time=datetime.now(), slot=slot, vid1="pond2.mp4", vid2="pune2.mp4")
 
         db.session.add(new_vid)
