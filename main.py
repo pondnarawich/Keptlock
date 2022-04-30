@@ -104,7 +104,7 @@ class Slot(db.Model):
     opened = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return '<Slot %r>' % self.id
+        return '<Slot %r>' % self.lid
 
 
 class Video(db.Model):
@@ -352,9 +352,9 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
-    slot_info = Slot.query.filter_by(lid=lid, slot_no=1).first()
-    slot_info.opened = False
-    db.session.commit()
+    # slot_info = Slot.query.filter_by(lid=lid, slot_no=2).first()
+    # slot_info.opened = False
+    # db.session.commit()
 
     def update_status_slot(slot):
         res = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
@@ -365,6 +365,7 @@ def rud_locker_api(lid):
             opened = False
         slot_db = Slot.query.filter_by(lid=str(res.json()['lid']), slot_no=int(res.json()['slot'])).first()
         slot_db.opened = opened
+        db.session.commit()
         vi_res = requests.get('http://127.0.0.1:5000/keptlock/video', data={'vi_path': str(res.json()['vi_path'])})
         open('static/vid/'+str(res.json()['vi_name'])+'.avi', 'wb').write(vi_res.content)
         clip = moviepy.VideoFileClip('static/vid/'+str(res.json()['vi_name'])+'.avi')
@@ -619,6 +620,7 @@ def slot_update_api(lid):
 
         form_lid = request.form['lid']
         slot_db = Slot.query.filter_by(lid=str(form_lid), slot_no=int(slot_no)).first()
+        # slot_db = Slot.query.all()
         print(slot_db)
         slot_db.opened = opened
     
