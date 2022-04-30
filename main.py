@@ -609,12 +609,16 @@ def slot_update_api(lid):
         except:
             flash("Something went wrong")
 
-    status = request.form['opened']
-    slot_no = request.form['slot']
-    if str(status) == "True":
+    if "opened" in request.form:
+        status = request.form['opened']
+        slot_no = request.form['slot']
+        if str(status) == "True":
             opened = True
-    else:
-        opened = False
+        else:
+            opened = False
+
+        slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
+        slot_db.opened = opened
     
     if "vi_path" in request.form:
         vi_name = request.form['vi_name']
@@ -622,9 +626,18 @@ def slot_update_api(lid):
         
         x = threading.Thread(target=save_vid, args=(vi_name,))
         x.start()
-    
-    slot_db = Slot.query.filter_by(lid=lid, slot_no=int(slot_no)).first()
-    slot_db.opened = opened
+
+    if "raining" in request.form:
+        raining = request.form['raining']
+
+        rain_db = Rain.query.filter_by(lid=lid).first()
+        if str(raining) == "True":
+            raining = True
+        else:
+            raining = False
+            
+        rain_db.raining = raining
+
     db.session.commit()
 
     return "ok", 200
