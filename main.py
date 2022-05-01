@@ -352,9 +352,9 @@ def create_locker_api():
 @app.route('/keptlock/locker/<lid>', methods=['POST', 'PUT', 'GET', 'DELETE'])
 @login_required
 def rud_locker_api(lid):
-    # slot_info = Slot.query.filter_by(lid=lid, slot_no=2).first()
-    # slot_info.opened = False
-    # db.session.commit()
+    slot_info = Slot.query.filter_by(lid=lid, slot_no=2).first()
+    slot_info.opened = False
+    db.session.commit()
 
     def update_status_slot(slot):
         res = requests.get('http://127.0.0.1:5000/keptlock/unlock/' + slot)
