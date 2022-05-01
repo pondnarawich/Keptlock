@@ -430,7 +430,7 @@ def rud_locker_api(lid):
                     db.session.commit()
                 except:
                     flash("Something went wrong, please try again")
-                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#")
+                return redirect("http://0.0.0.0:8000/keptlock/locker/"+lid+"#home")
 
     if request.method == 'PUT':
         print('put', lid)
@@ -439,7 +439,6 @@ def rud_locker_api(lid):
         locker = Locker.query.filter_by(id=lid).first()
         slots = Slot.query.filter_by(lid=lid).all()
         pin = Pin.query.filter_by(lid=lid, uid=current_user.id, status='unused').all()
-        # TODO ask pond if want to show only for the action of that user or all user on a single locker
         history = History.query.filter_by(lid=lid).order_by(desc(History.date_time)).all()
 
         if not pin:
@@ -448,7 +447,7 @@ def rud_locker_api(lid):
             history = None
         if not rain:
             rain = None
-
+            
         if pin is not None:
             for p in pin:
                 if p.date_end < datetime.now():
